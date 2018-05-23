@@ -1,0 +1,15 @@
+{
+  "editor.tabSize": 2,
+  "editor.formatOnPaste": true,
+  "editor.rulers": [
+    100
+  ],
+  "editor.minimap.maxColumn": 80,
+  "editor.minimap.showSlider": "always",
+  "workbench.editor.openPositioning": "last",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "explorer.openEditors.visible": 0,
+  "C_Cpp.clang_format_fallbackStyle": "Google",
+}

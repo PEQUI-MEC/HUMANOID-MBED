@@ -1,7 +1,4 @@
-### MBED ###
-BUILD/
-mbed-os/
-*.pyc
+build/
 
 # Created by https://www.gitignore.io/api/c++
 
