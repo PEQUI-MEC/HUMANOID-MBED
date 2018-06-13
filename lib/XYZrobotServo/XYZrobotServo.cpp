@@ -1,6 +1,4 @@
 #include <XYZrobotServo.h>
-#include "mbed.h"
-#include "BufferSerial.h"
 
 #define CMD_EEPROM_WRITE 0x01
 #define CMD_EEPROM_READ 0x02
@@ -21,16 +19,6 @@
 
 XYZrobotServo::XYZrobotServo(uint8_t id, BufferSerial &serial, uint32_t baud) {
   serial.baud(baud);
-  this->serial = &serial;
-  this->id = id;
-  this->baud = baud;
-  this->lastError = XYZrobotServoError::None;
-}
-
-XYZrobotServo::XYZrobotServo(uint8_t id, PinName tx, PinName rx, uint32_t baud) {
-  BufferSerial serial(tx, rx, 32);
-  serial.baud(baud);
-
   this->serial = &serial;
   this->id = id;
   this->baud = baud;

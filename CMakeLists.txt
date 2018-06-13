@@ -41,13 +41,17 @@ include_directories(
   ${MBED_DIRECTORIES}
   ${LIB_DIR}/XYZrobotServo
   ${LIB_DIR}/BufferSerial
+  ${SRC_DIR}/utils
 )
 
 set(SOURCE_FILES
   ${MBED_FILES}
-  ${SRC_DIR}/main.cpp
   ${LIB_DIR}/XYZrobotServo/XYZrobotServo.cpp
   ${LIB_DIR}/BufferSerial/BufferSerial.cpp
+  ${SRC_DIR}/utils/ServoDiagnostics.cpp
+  ${SRC_DIR}/utils/Sinusoidal.cpp
+  ${SRC_DIR}/SerialPins.h
+  ${SRC_DIR}/main.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

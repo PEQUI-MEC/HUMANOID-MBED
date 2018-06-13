@@ -3,6 +3,7 @@
 #pragma once
 
 #include "stdint.h"
+#include "mbed.h"
 #include "BufferSerial.h"
 
 /// The possible communication errors that can happen when reading the
@@ -104,7 +105,6 @@ struct XYZrobotServoStatus {
 class XYZrobotServo {
 public:
   XYZrobotServo(uint8_t id, BufferSerial &, uint32_t baud);
-  XYZrobotServo(uint8_t id, PinName tx, PinName rx, uint32_t baud);
 
   /// Writes data from the specified buffer to the servo's EEPROM.
   ///
@@ -294,7 +294,7 @@ private:
   void flushRead();
 
   int readBytes(uint8_t *data, uint8_t size, int timeout);
-  
+
   void writeBytes(const uint8_t *data, uint8_t size);
 
   void sendRequest(uint8_t cmd,
