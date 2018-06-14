@@ -1,20 +1,36 @@
 #include "mbed.h"
 #include "SerialPins.h"
-#include "utils/ServoDiagnostics.h"
-#include "utils/Sinusoidal.h"
+#include <iostream>
+#include "Dense"
 
-DigitalOut led1(LED1);
-Serial pc(USBTX, USBRX);
+using namespace Eigen;
+using namespace std;
+
+Serial pc(USBTX, USBRX, 115200);
 
 int main() {
-  pc.baud(115200); // Usando minicom, o maximo é 115200
-  printf("Initializing...\n");
+  Timer timer;
 
-  Sinusoidal s(13);
-  s.run(400, 800, 0.5);
+  MatrixXd u1 = MatrixXd::Random(1,10) * 1000000;
+  MatrixXd v1 = MatrixXd::Random(10,1) * 1000000;
+  MatrixXd t1 = v1*u1;
+  
+  MatrixXd u2 = MatrixXd::Random(1,10) * 1000000;
+  MatrixXd v2 = MatrixXd::Random(10,1) * 1000000;
+  MatrixXd t2 = v2*u2;
 
-  while (true) {
-    led1 = !led1;
-    wait(0.5);
-  }
+  cout << "v1 = " << v1 << endl;
+  cout << "u1 = " << u1 << endl;
+  cout << "u1 * v1 =" << endl <<  t1 << endl << endl;
+
+  cout << "v2 = " << v2 << endl;
+  cout << "u2 = " << u2 << endl;
+  cout << "u2 * v2 =" << endl <<  t2 << endl << endl;
+
+  timer.start();
+  MatrixXd t3 = t1*t2;
+  timer.stop();
+
+  cout << "resultado:" << endl << t3 << endl;
+  cout << "tempo = " << timer.read_us() << " us" << endl;
 }
