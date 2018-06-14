@@ -22,3 +22,9 @@ cd build/
 cmake ..
 make
 ```
+
+Ou executar o script `build.sh` através do comando:
+
+```
+./build.sh
+```
