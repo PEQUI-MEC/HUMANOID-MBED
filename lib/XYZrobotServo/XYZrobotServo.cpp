@@ -15,8 +15,6 @@
 #define SET_TORQUE_OFF 2
 #define SET_POSITION_CONTROL_SERVO_ON 3
 
-#define DEBUGa
-
 XYZrobotServo::XYZrobotServo(uint8_t id, BufferSerial &serial, uint32_t baud) {
   serial.baud(baud);
   this->serial = &serial;
@@ -106,10 +104,6 @@ XYZrobotServoAckPolicy XYZrobotServo::readAckPolicyRam() {
 }
 
 XYZrobotServoStatus XYZrobotServo::readStatus() {
-#ifdef DEBUG
-  printf("Executando: readStatus\n");
-#endif
-
   flushRead();
 
   XYZrobotServoStatus status;
@@ -139,10 +133,6 @@ void XYZrobotServo::reboot() {
 }
 
 void XYZrobotServo::flushRead() {
-#ifdef DEBUG
-  printf("flushing...\n");
-#endif
-
   while (serial->readable()) {
     serial->getc();
   }
@@ -158,26 +148,16 @@ int XYZrobotServo::readBytes(uint8_t *data, uint8_t size, int timeout) {
     if (serial->readable()) {
       data[byte] = (uint8_t)serial->getc();
       byte++;
-#ifdef DEBUG
-      printf("Read: %d\n", serial->readable());
-#endif
     } else {
       wait(1.0/baud);
     }
   }
-
-#ifdef DEBUGq
-  printf("Bytes read: %d\n", byte);
-#endif
   return !(byte < size);
 }
 
 void XYZrobotServo::writeBytes(const uint8_t *data, uint8_t size) {
   for (int i = 0; i < size; i++) {
     serial->putc((int)data[i]);
-#ifdef DEBUG
-    printf("Wrote: %d\n", data[i]);
-#endif
   }
 }
 
