@@ -1,10 +1,45 @@
 #include "mbed.h"
+#include "config.h"
+#include "SerialPins.h"
+#include "Cluster.h"
+#include "DataController.h"
 
-DigitalOut led1(LED1);
+Serial pc(USBTX, USBRX, 115200); // Usando minicom, o maximo é 115200
 
 int main() {
-  while (true) {
-    led1 = !led1;
-    wait(0.5);
+  printf("Initializing...\n");
+  DataController& data = DataController::getInstance();
+
+  uint8_t ids[] = {1, 10, 14};
+  Cluster c(SerialPins::TX7, SerialPins::RX7, ids, 3);
+  c.start();
+
+  // Executar movimento senoidal
+  DigitalOut led(LED1);
+  int i = 0;
+
+  Timer timer;
+  timer.start();
+  float t;
+  float f = 0.5;
+
+  int min = 522;
+  int max = 700;
+  int amplitude = (max - min)/2;
+  int referencia = min + amplitude;
+  int pos = min;
+
+  while(true) { // Sempre é necessário um loop no main
+    t = timer.read();
+    pos = ((amplitude * cos(2 * M_PI * f * t)) + referencia);
+
+    if (pos >= min && pos <= max) {
+      led = true;
+
+      for (i = 0; i < 3; i++)
+        data.setTargetP(ids[i], pos);
+    } else {
+      led = false;
+    }
   }
 }
