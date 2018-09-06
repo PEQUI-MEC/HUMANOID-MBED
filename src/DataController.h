@@ -7,18 +7,18 @@ class DataController {
 private:
   DataController();
 
-  uint16_t servoP[NUM_SERVOS];
-  uint16_t servoI[NUM_SERVOS];
-  uint16_t targetP[NUM_SERVOS];
+  uint16_t realPosition[NUM_SERVOS];
+  uint16_t iBus[NUM_SERVOS];
+  uint16_t desiredPosition[NUM_SERVOS];
 
 public:
-  uint16_t getServoP(uint8_t id);
-  uint16_t getServoI(uint8_t id);
-  uint16_t getTargetP(uint8_t id);
+  uint16_t getRealPosition(uint8_t id);
+  uint16_t getIBus(uint8_t id);
+  uint16_t getDesiredPosition(uint8_t id);
 
-  void setServoP(uint8_t id, uint16_t p);
-  void setServoI(uint8_t id, uint16_t c);
-  void setTargetP(uint8_t id, uint16_t p);
+  void setRealPosition(uint8_t id, uint16_t p);
+  void setIBus(uint8_t id, uint16_t c);
+  void setDesiredPosition(uint8_t id, uint16_t p);
 
   static DataController& getInstance() {
       static DataController instance;

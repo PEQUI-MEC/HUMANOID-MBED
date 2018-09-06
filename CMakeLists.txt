@@ -52,8 +52,9 @@ set(SOURCE_FILES
   ${SRC_DIR}/utils/Sinusoidal.cpp
   ${SRC_DIR}/Cluster.cpp
   ${SRC_DIR}/DataController.cpp
+  ${SRC_DIR}/Controll.cpp
   ${SRC_DIR}/config.h
-  ${SRC_DIR}/SerialPins.h
+  ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
 )
 
