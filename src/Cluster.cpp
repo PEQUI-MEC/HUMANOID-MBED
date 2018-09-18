@@ -4,11 +4,13 @@ Cluster::Cluster(PinName tx, PinName rx, uint8_t* ids, uint8_t length, uint32_t 
   this->size = length;
   this->data = &DataController::getInstance();
 
-  for (int i = 0; i < length; i++) {
-    // Enable servo i
-    Thread::wait(3000);
-    this->servos.push_back(XYZrobotServo(ids[i], this->serial, baud));
-    if (DEBUG) printf("Servo %d enabled\n", this->servos.back().getId());
+  for (uint8_t i = 0; i < length; i++) {
+    uint8_t id = ids[i];
+    printf("Enabling servo %d...\n", id);
+    DigitalOut en(config::enablePin[id - 1], 0);
+    Thread::wait(INIT_WAIT);
+    this->servos.push_back(XYZrobotServo(id, this->serial, baud));
+    printf("Servo %d enabled!\n", id);
   }
 }
 
@@ -18,7 +20,6 @@ void Cluster::start() {
 }
 
 void Cluster::run() {
-  DigitalOut led(LED2);
   uint8_t i = 0;
 
   while(true) {
@@ -28,30 +29,17 @@ void Cluster::run() {
       uint8_t id = servo.getId();
       uint16_t pos = this->data->getDesiredPosition(id);
 
-      if (DEBUG) printf("Servo %d: Going to %d\n", id, pos);
-      servo.setPosition(pos, 0);
+      servo.setPosition(pos, PLAYTIME);
 
       XYZrobotServoStatus status = servo.readStatus();
       if (!servo.getLastError()) {
         this->data->setRealPosition(id, status.position);
         this->data->setIBus(id, status.iBus);
-        printf("Servo %d: %d %d\n", id, status.position, status.iBus);
-      } else if (DEBUG) {
-        printf("Servo %d: Error %d\n", id, servo.getLastError());
+      } else {
+        this->data->setRealPosition(id, 0xFF);
+        this->data->setIBus(id, 0xFF);
       }
     }
-
-    // // Dados para plotar o grafico
-    // printf("$%d ", this->data->getTargetP(this->servos[0].getId()));
-    // for (i = 0; i < this->size; i++) {
-    //   uint8_t id = this->servos[i].getId();
-    //   if (i == this->size - 1)
-    //     printf("%d %d;\n", this->data->getServoP(id),
-    //             this->data->getServoI(id));
-    //   else
-    //     printf("%d %d ", this->data->getServoP(id),
-    //             this->data->getServoI(id));
-    // }
   }
 }
 
@@ -66,7 +54,7 @@ void Cluster::readPositions() {
       if (servo.getLastError())
         printf("Servo %d: Error %d\n", servo.getId(), servo.getLastError());
       else
-        printf("Servo %d: $%d %d;\n", servo.getId(), status.position, status.iBus);
+        printf("Servo %d: %d %d\n", servo.getId(), status.position, status.iBus);
     }
   }
 }

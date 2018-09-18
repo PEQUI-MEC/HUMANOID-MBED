@@ -1,3 +1,5 @@
+#pragma once
+
 #include "mbed.h"
 #include "config.h"
 #include "Cluster.h"
@@ -5,12 +7,14 @@
 void startClusters();
 
 void init() {
-  if (DEBUG) printf("Initializing...\n");
+  // Disable all enable pins
+  for (uint8_t i = 0; i < 22; i++)
+    DigitalOut en(config::enablePin[i], 1);
+
+  Thread::wait(1000);
 
   DataController::getInstance(); // First instance
   startClusters();
-
-  if (DEBUG) printf("Ready!\n");
 }
 
 void startClusters() {
