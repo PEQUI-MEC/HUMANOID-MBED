@@ -5,7 +5,7 @@
 #include "BufferSerial.h"
 #include "XYZrobotServo.h"
 #include "config.h"
-#include "DataController.h"
+#include "DataManager.h"
 
 class Cluster {
 public:
@@ -21,5 +21,5 @@ private:
   std::vector<XYZrobotServo> servos;
   BufferSerial serial;
   Thread* thread;
-  DataController* data;
+  DataManager* data;
 };

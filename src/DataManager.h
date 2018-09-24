@@ -3,9 +3,9 @@
 #include "mbed.h"
 #include "config.h"
 
-class DataController {
+class DataManager {
 private:
-  DataController();
+  DataManager();
 
   uint16_t realPosition[NUM_SERVOS];
   uint16_t iBus[NUM_SERVOS];
@@ -20,8 +20,8 @@ public:
   void setIBus(uint8_t id, uint16_t c);
   void setDesiredPosition(uint8_t id, uint16_t p);
 
-  static DataController& getInstance() {
-      static DataController instance;
+  static DataManager& getInstance() {
+      static DataManager instance;
       return instance;
   }
 };

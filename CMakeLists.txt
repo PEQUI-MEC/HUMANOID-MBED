@@ -51,7 +51,7 @@ set(SOURCE_FILES
   ${SRC_DIR}/utils/ServoDiagnostics.cpp
   ${SRC_DIR}/utils/Sinusoidal.cpp
   ${SRC_DIR}/Cluster.cpp
-  ${SRC_DIR}/DataController.cpp
+  ${SRC_DIR}/DataManager.cpp
   ${SRC_DIR}/Controll.cpp
   ${SRC_DIR}/config.h
   ${SRC_DIR}/init.h

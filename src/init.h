@@ -2,6 +2,7 @@
 
 #include "mbed.h"
 #include "config.h"
+#include "DataManager.h"
 #include "Cluster.h"
 
 void startClusters();
@@ -13,7 +14,7 @@ void init() {
 
   Thread::wait(1000);
 
-  DataController::getInstance(); // First instance
+  DataManager::getInstance(); // First instance
   startClusters();
 }
 

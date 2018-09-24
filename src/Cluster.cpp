@@ -2,7 +2,7 @@
 
 Cluster::Cluster(PinName tx, PinName rx, uint8_t* ids, uint8_t length, uint32_t baud): serial(tx, rx, 32) {
   this->size = length;
-  this->data = &DataController::getInstance();
+  this->data = &DataManager::getInstance();
 
   for (uint8_t i = 0; i < length; i++) {
     uint8_t id = ids[i];
@@ -35,9 +35,6 @@ void Cluster::run() {
       if (!servo.getLastError()) {
         this->data->setRealPosition(id, status.position);
         this->data->setIBus(id, status.iBus);
-      } else {
-        this->data->setRealPosition(id, 0xFF);
-        this->data->setIBus(id, 0xFF);
       }
     }
   }
