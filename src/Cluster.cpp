@@ -1,25 +1,42 @@
 #include "Cluster.h"
 
-Cluster::Cluster(PinName tx, PinName rx, uint8_t* ids, uint8_t length, uint32_t baud): serial(tx, rx, 32) {
-  this->size = length;
+Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, uint32_t baud)
+  : servos({{
+        {{ids[0]}, this->serial, baud},
+        {{ids[1]}, this->serial, baud},
+        {{ids[2]}, this->serial, baud},
+    }}),
+    serial(tx, rx, 32)
+{
+  serial.baud(baud);
+  this->size = ids.size();
   this->data = &DataManager::getInstance();
 
-  for (uint8_t i = 0; i < length; i++) {
-    uint8_t id = ids[i];
+  for (uint8_t i = 0; i < size; i++) {
+    uint8_t id = this->servos[i].getId();
     printf("Enabling servo %d...\n", id);
     DigitalOut en(config::enablePin[id - 1], 0);
     Thread::wait(INIT_WAIT);
-    this->servos.push_back(XYZrobotServo(id, this->serial, baud));
     printf("Servo %d enabled!\n", id);
   }
 }
 
+Cluster::~Cluster() {
+  printf("WARN: Destructing Cluster...");
+  this->thread.terminate();
+  for (uint8_t i = 0; i < size; i++)
+    DigitalOut en(config::enablePin[this->servos[i].getId() - 1], 0);
+}
+
 void Cluster::start() {
-  this->thread = new Thread();
-  this->thread->start(callback(&Cluster::thread_starter, this));
+  if (CLUSTER_READ_ONLY)
+    this->thread.start(callback(this, &Cluster::readPositions));
+  else
+    this->thread.start(callback(this, &Cluster::run));
 }
 
 void Cluster::run() {
+  printf("Running cluster...\n");
   uint8_t i = 0;
 
   while(true) {
@@ -54,12 +71,4 @@ void Cluster::readPositions() {
         printf("Servo %d: %d %d\n", servo.getId(), status.position, status.iBus);
     }
   }
-}
-
-void Cluster::thread_starter(void const *p) {
-  Cluster* instance = (Cluster*)p;
-  if (CLUSTER_READ_ONLY)
-    instance->readPositions();
-  else
-    instance->run();
 }

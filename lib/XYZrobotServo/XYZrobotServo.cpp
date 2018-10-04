@@ -15,8 +15,15 @@
 #define SET_TORQUE_OFF 2
 #define SET_POSITION_CONTROL_SERVO_ON 3
 
+XYZrobotServo::XYZrobotServo(uint8_t id, PinName tx, PinName rx, uint32_t baud) {
+  this->serial = new BufferSerial(tx, rx, 32);
+  this->serial->baud(baud);
+  this->id = id;
+  this->baud = baud;
+  this->lastError = XYZrobotServoError::None;
+}
+
 XYZrobotServo::XYZrobotServo(uint8_t id, BufferSerial &serial, uint32_t baud) {
-  serial.baud(baud);
   this->serial = &serial;
   this->id = id;
   this->baud = baud;
@@ -156,8 +163,8 @@ int XYZrobotServo::readBytes(uint8_t *data, uint8_t size, int timeout) {
 }
 
 void XYZrobotServo::writeBytes(const uint8_t *data, uint8_t size) {
-  for (int i = 0; i < size; i++) {
-    serial->putc((int)data[i]);
+  for (uint8_t i = 0; i < size; i++) {
+    serial->putc(data[i]);
   }
 }
 

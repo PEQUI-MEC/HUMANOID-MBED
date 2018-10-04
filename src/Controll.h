@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BufferSerial.h"
-#include "DataController.h"
+#include "DataManager.h"
 #include "config.h"
 #include "mbed.h"
 
@@ -11,17 +11,16 @@ class Controll {
   void requestUpdate(void);
 
  private:
-  bool readBytes(uint8_t* data, uint8_t size = dataSize, uint16_t timeout = 0);
-  void writeBytes(uint8_t* data, uint8_t size = dataSize);
-  uint8_t checksum(uint8_t* data, uint8_t size = dataSize - 1);
+  void readBytes(uint8_t* data, uint8_t size);
+  void writeBytes(uint8_t* data, uint8_t size);
+  uint8_t checksum(uint8_t cmd, uint8_t size, uint8_t* data, uint8_t dataSize);
   void sendPositions(void);
   bool readResponse(void);
+  void updatePositions(uint8_t* pos, uint8_t size);
 
-  static const uint8_t header = P_HEADER;
-  static const uint8_t dataSize = P_SIZE;
+  static const uint8_t serialBufferSize = 50;
 
-  uint8_t buffer[dataSize];
   uint32_t baudRate;
   BufferSerial serial;
-  DataController* data;
+  DataManager* data;
 };

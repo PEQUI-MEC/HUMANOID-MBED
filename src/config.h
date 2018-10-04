@@ -46,13 +46,18 @@
 #define VREF PA_5
 
 #define NUM_SERVOS 18
+#define CLUSTER_SIZE 3
 #define CLUSTER_READ_ONLY false
 #define INIT_WAIT 1000
 #define PLAYTIME 0
 
 // Protocol
-#define P_HEADER 0xE8
-#define P_SIZE ((NUM_SERVOS * 2) + 2)
+#define P_HEADER_BYTE 0xE8
+#define P_HEADER_SIZE 4 // HEADERB CMDID SIZE CHECKSUM
+#define P_ERROR_ID 0x00
+#define P_ERROR_SIZE P_HEADER_SIZE
+#define P_UPDATE_ID 0x01
+#define P_UPDATE_SIZE (P_HEADER_SIZE + (NUM_SERVOS * 2))
 
 namespace config {
   const uint16_t initialPosition[NUM_SERVOS] = {

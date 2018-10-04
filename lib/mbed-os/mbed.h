@@ -16,6 +16,8 @@
 #ifndef MBED_H
 #define MBED_H
 
+#include "mbed_config.h"
+
 #define MBED_LIBRARY_VERSION 160
 
 #if MBED_CONF_RTOS_PRESENT
@@ -32,7 +34,7 @@
 #endif
 
 #define MBED_ENCODE_VERSION(major, minor, patch) ((major)*10000 + (minor)*100 + (patch))
-#define MBED_VERSION MBED_ENCODE_VERSION(MBED_MAJOR_VERSION, MBED_MINOR_VERSION, MBED_PATCH_VERSION)        
+#define MBED_VERSION MBED_ENCODE_VERSION(MBED_MAJOR_VERSION, MBED_MINOR_VERSION, MBED_PATCH_VERSION)
 #if MBED_CONF_RTOS_PRESENT
 #include "rtos/rtos.h"
 #endif

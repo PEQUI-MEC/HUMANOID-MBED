@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <array>
 #include "mbed.h"
 #include "BufferSerial.h"
 #include "XYZrobotServo.h"
@@ -9,17 +9,16 @@
 
 class Cluster {
 public:
-  Cluster(PinName tx, PinName rx, uint8_t* ids, uint8_t length, uint32_t baud = 115200);
+  Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, uint32_t baud = 115200);
+  ~Cluster();
   void start(void);
   void run(void);
   void readPositions(void);
 
-  static void thread_starter(void const *p);
-
 private:
   uint8_t size;
-  std::vector<XYZrobotServo> servos;
+  std::array<XYZrobotServo, CLUSTER_SIZE> servos;
   BufferSerial serial;
-  Thread* thread;
+  Thread thread;
   DataManager* data;
 };

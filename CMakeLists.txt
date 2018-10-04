@@ -54,7 +54,6 @@ set(SOURCE_FILES
   ${SRC_DIR}/DataManager.cpp
   ${SRC_DIR}/Controll.cpp
   ${SRC_DIR}/config.h
-  ${SRC_DIR}/init.h
   ${SRC_DIR}/main.cpp
 )
 
