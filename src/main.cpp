@@ -1,5 +1,5 @@
 #include "Cluster.h"
-#include "Controll.h"
+#include "Communication.h"
 #include "config.h"
 #include "mbed.h"
 
@@ -19,6 +19,12 @@ int main() {
    **/
   Cluster c2(SERIAL_TX7, SERIAL_RX7, {1, 2, 3});
   c2.start();
+
+  /**
+   * Initializing Communication
+   **/
+  Communication com(SERIAL_TX5, SERIAL_RX5, 115200);
+  com.start();
 
   /**
    * Main thread waits forever

@@ -53,3 +53,7 @@ int BufferSerial::getc(void) {
     return (int)_buf[_present];
   }
 }
+
+void BufferSerial::flush(void) {
+  while(readable()) getc();
+}

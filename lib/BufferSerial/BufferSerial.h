@@ -27,6 +27,7 @@ public:
     virtual int getc(void);
     virtual int unreadable(void);
     virtual int readable(void);
+    void flush();
 };
 
 #endif

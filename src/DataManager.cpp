@@ -1,6 +1,6 @@
 #include "DataManager.h"
 
-DataManager::DataManager() {
+DataManager::DataManager() : vref(VREF) {
   int i = 0;
   for (i = 0; i < NUM_SERVOS; i++)
     this->desiredPosition[i] = config::initialPosition[i];
@@ -34,4 +34,8 @@ void DataManager::setIBus(uint8_t id, uint16_t i) {
 void DataManager::setDesiredPosition(uint8_t id, uint16_t p) {
   if ((id <= 0) || (id > NUM_SERVOS)) return;
   this->desiredPosition[id-1] = p;
+}
+
+uint8_t DataManager::getVref() {
+  return (uint8_t)(0xFF * vref.read());
 }

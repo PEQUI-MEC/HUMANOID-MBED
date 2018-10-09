@@ -4,14 +4,15 @@
 #include "config.h"
 
 class DataManager {
-private:
+ private:
   DataManager();
 
   uint16_t realPosition[NUM_SERVOS];
   uint16_t iBus[NUM_SERVOS];
   uint16_t desiredPosition[NUM_SERVOS];
+  AnalogIn vref;
 
-public:
+ public:
   uint16_t getRealPosition(uint8_t id);
   uint16_t getIBus(uint8_t id);
   uint16_t getDesiredPosition(uint8_t id);
@@ -20,8 +21,10 @@ public:
   void setIBus(uint8_t id, uint16_t c);
   void setDesiredPosition(uint8_t id, uint16_t p);
 
+  uint8_t getVref();
+
   static DataManager& getInstance() {
-      static DataManager instance;
-      return instance;
+    static DataManager instance;
+    return instance;
   }
 };

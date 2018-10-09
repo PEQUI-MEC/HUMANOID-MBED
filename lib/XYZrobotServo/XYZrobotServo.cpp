@@ -151,7 +151,6 @@ int XYZrobotServo::readBytes(uint8_t *data, uint8_t size, int timeout) {
   timer.start();
 
   while (byte < size && timer.read_ms() < timeout) {
-    //printf("Readable: %d\n", serial->readable());
     if (serial->readable()) {
       data[byte] = (uint8_t)serial->getc();
       byte++;
