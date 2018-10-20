@@ -29,8 +29,7 @@ class Communication {
   void writeBytes(uint8_t* data, uint8_t size);
   uint8_t checksum(uint8_t cmd, uint8_t size, uint8_t* data, uint8_t dataSize);
 
-  void updateGimbal(int8_t pitch, int8_t yaw);
-  void updateBody(int16_t* pos, uint8_t size);
+  void updateGoals(int16_t* pos, uint8_t size);
 
   static const uint8_t serialBufferSize = 50;
 

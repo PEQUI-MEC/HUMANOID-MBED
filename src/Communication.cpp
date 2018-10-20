@@ -57,14 +57,14 @@ void Communication::sendUpdate() {
   uint8_t header[P_HEADER_SIZE];
   header[0] = P_HEADER_BYTE;
   header[1] = P_UPDATE_ID;
-  header[2] = P_UPDATE_SIZE_SEND;
+  header[2] = P_UPDATE_SIZE;
 
-  const uint8_t dataSize = P_UPDATE_SIZE_SEND - P_HEADER_SIZE;
-  uint8_t data[P_UPDATE_SIZE_SEND - P_HEADER_SIZE];
-  for (uint8_t i = 0; i < NUM_SERVOS * 2; i += 2) {
-    uint16_t pos = this->data->getRealPosition((i/2) + 1);
-    data[i] = (pos >> 8) & 0xFF;
-    data[i+1] = pos & 0xFF;
+  const uint8_t dataSize = P_UPDATE_SIZE - P_HEADER_SIZE;
+  uint8_t data[P_UPDATE_SIZE - P_HEADER_SIZE];
+  for (uint8_t i = 0; i < NUM_SERVOS; i++) {
+    uint16_t pos = this->data->getRealPosition(i);
+    data[i * 2] = (pos >> 8) & 0xFF;
+    data[(i * 2) + 1] = pos & 0xFF;
   }
 
   data[dataSize - 1] = this->data->getVref();
@@ -94,17 +94,11 @@ bool Communication::readGoal() {
   if (header[3] != checksum(header[1], header[2], data, dataSize))
     return Communication::STATUS_INVALID;
 
-  updateGimbal(data[dataSize - 2], data[dataSize - 1]);
-  updateBody((int16_t*)data, NUM_SERVOS);
+  updateGoals((int16_t*)data, NUM_SERVOS);
   return Communication::STATUS_DONE;
 }
 
-void Communication::updateGimbal(int8_t pitch, int8_t yaw) {
-  data->setGimbalPitch(pitch);
-  data->setGimbalYaw(yaw);
-}
-
-void Communication::updateBody(int16_t* pos, uint8_t size) {
+void Communication::updateGoals(int16_t* pos, uint8_t size) {
   for (uint8_t i = 0; i < size; i++)
     data->setDesiredPosition(i, pos[i]);
 }

@@ -48,8 +48,8 @@ A comunicação com o alto nível acontece através de serial (UART) utilizando 
 | Comando | ID | N° Bytes | Significado |
 |:---:|:---:|:---:|:---|
 | ERROR | `0x01` | 0 | Indica algum erro na transmissão ou reconhecimento da ultima mensagem |
-| UPDATE | `0x02` | 39 | Transmite a posição de cada um dos motores e do nível de tensão da bateria |
-| GOAL | `0x03` | 38 | Transmite as posições desejadas para cada motor |
+| UPDATE | `0x02` | 41 | Transmite a posição de cada um dos motores e do nível de tensão da bateria |
+| GOAL | `0x03` | 40 | Transmite as posições desejadas para cada motor |
 
 ### Comando UPDATE
 
@@ -57,10 +57,10 @@ A comunicação com o alto nível acontece através de serial (UART) utilizando 
 |:---:|:---|
 | 0 - 3| Cabeçalho |
 | 4 - 39 | Posições dos 18 motores do corpo |
-| 40 - 41 | Posições dos motores do gimbal |
-| 42 | Nível de tensão da bateria |
+| 40 - 43 | Posições dos motores do gimbal, sendo a primeira posição o *pitch* e a segunda o *yaw* |
+| 44 | Nível de tensão da bateria |
 
-As posições dos motores do corpo são transmitidas em conjuntos de 2 bytes em que o byte nas posições `N` e `N+1` indicam a posição do motor com ID `((N - 4)/2) + 1`. O byte `N` é a parte superior da posição (MSB) e o byte `N+1` é a parte inferior da posição (LSB).
+As posições dos motores do corpo e do gimbal são transmitidas em conjuntos de 2 bytes em que o byte nas posições `N` e `N+1` indicam a posição do motor com ID `((N - 4)/2) + 1`. O byte `N` é a parte superior da posição (MSB) e o byte `N+1` é a parte inferior da posição (LSB).
 
 ### Comando GOAL
 
@@ -68,6 +68,6 @@ As posições dos motores do corpo são transmitidas em conjuntos de 2 bytes em 
 |:---:|:---|
 | 0 - 3| Cabeçalho |
 | 4 - 39 | Posições dos 18 motores do corpo |
-| 40 - 41 | Posições dos motores do gimbal |
+| 40 - 43 | Posições dos motores do gimbal, sendo a primeira posição o *pitch* e a segunda o *yaw* |
 
 As posições dos motores do corpo são transmitidas seguindo a mesma regra do comando UPDATE.
