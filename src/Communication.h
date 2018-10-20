@@ -21,14 +21,16 @@ class Communication {
  private:
   void loop(void);
   void signalPeriod(void);
-  void sendUpdate(void);
-  bool readUpdate(void);
   void sendError(void);
+  void sendUpdate(void);
+  bool readGoal(void);
 
   bool readBytes(uint8_t* data, uint8_t size, uint16_t timeout = PERIOD - 5);
   void writeBytes(uint8_t* data, uint8_t size);
   uint8_t checksum(uint8_t cmd, uint8_t size, uint8_t* data, uint8_t dataSize);
-  void updatePositions(uint8_t* pos, uint8_t size);
+
+  void updateGimbal(int8_t pitch, int8_t yaw);
+  void updateBody(int16_t* pos, uint8_t size);
 
   static const uint8_t serialBufferSize = 50;
 

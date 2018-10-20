@@ -28,12 +28,11 @@ void Communication::loop() {
     serial.flush();
     sendUpdate();
 
-    while (status != Communication::STATUS_DONE) {
-      status = readUpdate();
+    while (true) {
+      status = readGoal();
 
       switch (status) {
         case Communication::STATUS_ERROR:
-        case Communication::STATUS_TIMEOUT:
           wait_ms(1);
           serial.flush();
           sendUpdate();
@@ -76,7 +75,7 @@ void Communication::sendUpdate() {
   writeBytes(data, dataSize);
 }
 
-bool Communication::readUpdate() {
+bool Communication::readGoal() {
   bool timedout;
   uint8_t header[P_HEADER_SIZE];
   timedout = readBytes(header, P_HEADER_SIZE);
@@ -84,25 +83,30 @@ bool Communication::readUpdate() {
   if (timedout) return Communication::STATUS_TIMEOUT;
   if (header[0] != P_HEADER_BYTE) return Communication::STATUS_INVALID;
   if (header[1] == P_ERROR_ID) return Communication::STATUS_ERROR;
-  if (header[2] < P_UPDATE_SIZE_RECEIVE) return Communication::STATUS_INVALID;
+  if (header[1] != P_GOAL_ID) return Communication::STATUS_INVALID;
+  if (header[2] != P_GOAL_SIZE) return Communication::STATUS_INVALID;
 
-  const uint8_t dataSize = P_UPDATE_SIZE_RECEIVE - P_HEADER_SIZE;
-  uint8_t data[P_UPDATE_SIZE_RECEIVE - P_HEADER_SIZE];
-  timedout = readBytes(data, dataSize);
+  const uint8_t dataSize = P_GOAL_SIZE - P_HEADER_SIZE;
+  uint8_t data[P_GOAL_SIZE - P_HEADER_SIZE];
+  timedout = readBytes(data, dataSize, 3);
 
-  if (timedout) return Communication::STATUS_TIMEOUT;
+  if (timedout) return Communication::STATUS_INVALID;
   if (header[3] != checksum(header[1], header[2], data, dataSize))
     return Communication::STATUS_INVALID;
 
-  updatePositions(data, dataSize);
+  updateGimbal(data[dataSize - 2], data[dataSize - 1]);
+  updateBody((int16_t*)data, NUM_SERVOS);
   return Communication::STATUS_DONE;
 }
 
-void Communication::updatePositions(uint8_t* pos, uint8_t size) {
-  for (uint8_t i = 0; i < size; i += 2) {
-    uint16_t position = (pos[i] << 8) + pos[i + 1];
-    data->setDesiredPosition(i / 2, position);
-  }
+void Communication::updateGimbal(int8_t pitch, int8_t yaw) {
+  data->setGimbalPitch(pitch);
+  data->setGimbalYaw(yaw);
+}
+
+void Communication::updateBody(int16_t* pos, uint8_t size) {
+  for (uint8_t i = 0; i < size; i++)
+    data->setDesiredPosition(i, pos[i]);
 }
 
 bool Communication::readBytes(uint8_t* data, uint8_t size, uint16_t timeout) {
@@ -115,7 +119,7 @@ bool Communication::readBytes(uint8_t* data, uint8_t size, uint16_t timeout) {
       data[byte] = (uint8_t)serial.getc();
       byte++;
     } else {
-      wait(1.0 / (float)baudRate);
+      wait(1.0 / (double)baudRate);
     }
   }
 

@@ -58,13 +58,9 @@
 #define P_HEADER_SIZE 4 // HEADERB CMDID SIZE CHECKSUM
 #define P_ERROR_ID 0x01
 #define P_ERROR_SIZE P_HEADER_SIZE
-#define P_START_ID 0x02
-#define P_START_SIZE P_HEADER_SIZE
-#define P_STOP_ID 0x03
-#define P_STOP_SIZE P_HEADER_SIZE
-#define P_UPDATE_ID 0x04
+#define P_UPDATE_ID 0x02
 #define P_UPDATE_SIZE_SEND (P_HEADER_SIZE + (NUM_SERVOS * 2) + 1)
-#define P_GOAL_ID 0x05
+#define P_GOAL_ID 0x03
 #define P_GOAL_SIZE (P_HEADER_SIZE + (NUM_SERVOS * 2))
 
 namespace config {

@@ -47,11 +47,9 @@ A comunicação com o alto nível acontece através de serial (UART) utilizando 
 
 | Comando | ID | N° Bytes | Significado |
 |:---:|:---:|:---:|:---|
-| ERROR | `0x01` | 0 | Indica algum erro na transmissão ou reconhecimento da mensagem |
-| START | `0x02` | 0 | Inicia a transmissão periódica de UPDATEs |
-| STOP | `0x03` | 0 | Para a transmissão periódica de UPDATEs |
-| UPDATE | `0x04` | 39 | Transmite a posição de cada um dos motores e do nível de tensão da bateria |
-| GOAL | `0x05` | 38 | Transmite as posições desejadas para cada motor |
+| ERROR | `0x01` | 0 | Indica algum erro na transmissão ou reconhecimento da ultima mensagem |
+| UPDATE | `0x02` | 39 | Transmite a posição de cada um dos motores e do nível de tensão da bateria |
+| GOAL | `0x03` | 38 | Transmite as posições desejadas para cada motor |
 
 ### Comando UPDATE
 
