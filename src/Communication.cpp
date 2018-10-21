@@ -28,7 +28,7 @@ void Communication::loop() {
     serial.flush();
     sendUpdate();
 
-    while (true) {
+    while (status != Communication::STATUS_DONE && status != Communication::STATUS_TIMEOUT) {
       status = readGoal();
 
       switch (status) {
@@ -56,42 +56,41 @@ void Communication::signalPeriod() {
 void Communication::sendUpdate() {
   uint8_t header[P_HEADER_SIZE];
   header[0] = P_HEADER_BYTE;
-  header[1] = P_UPDATE_ID;
-  header[2] = P_UPDATE_SIZE;
+  header[1] = P_HEADER_BYTE;
+  header[2] = P_UPDATE_ID;
+  header[3] = P_HEADER_SIZE + P_UPDATE_DATA_SIZE;
 
-  const uint8_t dataSize = P_UPDATE_SIZE - P_HEADER_SIZE;
-  uint8_t data[P_UPDATE_SIZE - P_HEADER_SIZE];
+  uint8_t data[P_UPDATE_DATA_SIZE];
   for (uint8_t i = 0; i < NUM_SERVOS; i++) {
-    uint16_t pos = this->data->getRealPosition(i);
+    uint16_t pos = this->data->getRealPosition(i+1);
     data[i * 2] = (pos >> 8) & 0xFF;
     data[(i * 2) + 1] = pos & 0xFF;
   }
 
-  data[dataSize - 1] = this->data->getVref();
+  data[P_UPDATE_DATA_SIZE - 1] = this->data->getVref();
 
-  header[3] = checksum(header[1], header[2], data, dataSize);
+  header[4] = checksum(header[2], header[3], data, P_UPDATE_DATA_SIZE);
 
   writeBytes(header, P_HEADER_SIZE);
-  writeBytes(data, dataSize);
+  writeBytes(data, P_UPDATE_DATA_SIZE);
 }
 
 bool Communication::readGoal() {
   bool timedout;
   uint8_t header[P_HEADER_SIZE];
-  timedout = readBytes(header, P_HEADER_SIZE);
+  timedout = readBytes(header, P_HEADER_SIZE, PERIOD - 5);
 
   if (timedout) return Communication::STATUS_TIMEOUT;
-  if (header[0] != P_HEADER_BYTE) return Communication::STATUS_INVALID;
-  if (header[1] == P_ERROR_ID) return Communication::STATUS_ERROR;
-  if (header[1] != P_GOAL_ID) return Communication::STATUS_INVALID;
-  if (header[2] != P_GOAL_SIZE) return Communication::STATUS_INVALID;
+  if (header[0] != P_HEADER_BYTE || header[1] != P_HEADER_BYTE) return Communication::STATUS_INVALID;
+  if (header[2] == P_ERROR_ID) return Communication::STATUS_ERROR;
+  if (header[2] != P_GOAL_ID) return Communication::STATUS_INVALID;
+  if (header[3] != P_HEADER_SIZE + P_GOAL_DATA_SIZE) return Communication::STATUS_INVALID;
 
-  const uint8_t dataSize = P_GOAL_SIZE - P_HEADER_SIZE;
-  uint8_t data[P_GOAL_SIZE - P_HEADER_SIZE];
-  timedout = readBytes(data, dataSize, 3);
+  uint8_t data[P_GOAL_DATA_SIZE];
+  timedout = readBytes(data, P_GOAL_DATA_SIZE, 3);
 
   if (timedout) return Communication::STATUS_INVALID;
-  if (header[3] != checksum(header[1], header[2], data, dataSize))
+  if (header[4] != checksum(header[2], header[3], data, P_GOAL_DATA_SIZE))
     return Communication::STATUS_INVALID;
 
   updateGoals((int16_t*)data, NUM_SERVOS);

@@ -25,7 +25,7 @@ class Communication {
   void sendUpdate(void);
   bool readGoal(void);
 
-  bool readBytes(uint8_t* data, uint8_t size, uint16_t timeout = PERIOD - 5);
+  bool readBytes(uint8_t* data, uint8_t size, uint16_t timeout = 0);
   void writeBytes(uint8_t* data, uint8_t size);
   uint8_t checksum(uint8_t cmd, uint8_t size, uint8_t* data, uint8_t dataSize);
 

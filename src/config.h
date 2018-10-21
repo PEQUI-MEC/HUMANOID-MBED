@@ -53,15 +53,14 @@
 #define PLAYTIME 0
 
 // Communication
-#define PERIOD 1000 // ms
-#define P_HEADER_BYTE 0xE8
-#define P_HEADER_SIZE 4 // HEADERB CMDID SIZE CHECKSUM
+#define PERIOD 20 // ms
+#define P_HEADER_BYTE 0xF1
+#define P_HEADER_SIZE 5 // HEADERB CMDID SIZE CHECKSUM
 #define P_ERROR_ID 0x01
-#define P_ERROR_SIZE P_HEADER_SIZE
 #define P_UPDATE_ID 0x02
-#define P_UPDATE_SIZE (P_HEADER_SIZE + (NUM_SERVOS * 2) + 1)
+#define P_UPDATE_DATA_SIZE ((NUM_SERVOS * 2) + 1)
 #define P_GOAL_ID 0x03
-#define P_GOAL_SIZE (P_HEADER_SIZE + (NUM_SERVOS * 2))
+#define P_GOAL_DATA_SIZE (NUM_SERVOS * 2)
 
 namespace config {
   const uint16_t initialPosition[NUM_SERVOS] = {
