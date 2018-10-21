@@ -11,7 +11,7 @@ void disable_all_enable_pins();
 
 int main() {
   led1 = true;
-  uint8_t header[4] = {0x8E, 0x02, 45, 0x48};
+  uint8_t header[5] = {0xF1, 0xF1, 0x02, 45, 0x48};
   uint16_t data[20] = {
     1, 2, 3, 4, 5, 6,
     7, 8, 9, 10, 11, 12,
@@ -20,7 +20,7 @@ int main() {
   };
 
   while (true) {
-    for (uint8_t i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 5; i++)
       pc.putc(header[i]);
 
     for (uint8_t i = 0; i < 20; i++) {
