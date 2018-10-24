@@ -13,17 +13,19 @@ class Communication {
 
   static const uint8_t SIGNAL_CONTINUE = 1;
   static const uint8_t STATUS_PENDING = 0;
-  static const uint8_t STATUS_TIMEOUT = 1;
-  static const uint8_t STATUS_ERROR = 2;
-  static const uint8_t STATUS_INVALID = 3;
+  static const uint8_t STATUS_ERROR = 1;
+  static const uint8_t STATUS_TIMEOUT = 2;
+  static const uint8_t STATUS_DATA_TIMEOUT = 3;
+  static const uint8_t STATUS_INVALID = 4;
   static const uint8_t STATUS_DONE = 10;
 
  private:
   void loop(void);
   void signalPeriod(void);
   void sendError(void);
+  void sendTimeout(void);
   void sendUpdate(void);
-  bool readGoal(void);
+  uint8_t readGoal(void);
 
   bool readBytes(uint8_t* data, uint8_t size, uint16_t timeout = 0);
   void writeBytes(uint8_t* data, uint8_t size);
@@ -36,6 +38,7 @@ class Communication {
   uint32_t baudRate;
   Thread thread;
   Timeout timeout;
+  DigitalOut led;
   BufferSerial serial;
   DataManager* data;
 };

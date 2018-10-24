@@ -48,6 +48,7 @@ set(SOURCE_FILES
   ${MBED_FILES}
   ${LIB_DIR}/XYZrobotServo/XYZrobotServo.cpp
   ${LIB_DIR}/BufferSerial/BufferSerial.cpp
+  ${SRC_DIR}/utils/MockCluster.cpp
   ${SRC_DIR}/utils/ServoDiagnostics.cpp
   ${SRC_DIR}/utils/Sinusoidal.cpp
   ${SRC_DIR}/Cluster.cpp

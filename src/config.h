@@ -61,6 +61,7 @@
 #define P_UPDATE_DATA_SIZE ((NUM_SERVOS * 2) + 1)
 #define P_GOAL_ID 0x03
 #define P_GOAL_DATA_SIZE (NUM_SERVOS * 2)
+#define P_TIMEOUT_ID 0x04
 
 namespace config {
   const uint16_t initialPosition[NUM_SERVOS] = {

@@ -5,10 +5,11 @@
 
 class Sinusoidal {
 public:
-  Sinusoidal(int id = 1, PinName tx = SERIAL_TX7, PinName rx = SERIAL_RX7, int baud = 115200);
-  void run(int min, int max, float f, int playtime = 0);
+  Sinusoidal(uint8_t id = 1, PinName tx = SERIAL_TX7, PinName rx = SERIAL_RX7, uint32_t baud = 115200);
+  void run(uint16_t min, uint16_t max, float f, uint8_t playtime = 0);
 
-private:
-  int id;
-  XYZrobotServo* servo;
+ private:
+  uint8_t id;
+  uint32_t baud;
+  BufferSerial serial;
 };

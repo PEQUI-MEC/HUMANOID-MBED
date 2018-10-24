@@ -1,9 +1,6 @@
 #pragma once
 
-#include <array>
-#include "BufferSerial.h"
-#include "DataManager.h"
-#include "XYZrobotServo.h"
+#include "../DataManager.h"
 #include "config.h"
 #include "mbed.h"
 
