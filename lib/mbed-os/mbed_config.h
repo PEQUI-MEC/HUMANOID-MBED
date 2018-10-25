@@ -29,6 +29,10 @@
 #define DEVICE_ANALOGIN 1
 #endif
 
+#ifndef DEVICE_I2C
+#define DEVICE_I2C 1
+#endif
+
 // Configuration parameters
 #define MBED_CONF_LORA_DEVICE_ADDRESS                     0x00000000                                                                                       // set by library:lora
 #define MBED_CONF_PLATFORM_STDIO_BUFFERED_SERIAL          0                                                                                                // set by library:platform

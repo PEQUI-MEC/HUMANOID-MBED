@@ -35,6 +35,9 @@ class Communication {
 
   static const uint8_t serialBufferSize = 50;
 
+  uint16_t count;  // TO REMOVE
+  Timer timer;     // TO REMOVE
+
   uint32_t baudRate;
   Thread thread;
   Timeout timeout;

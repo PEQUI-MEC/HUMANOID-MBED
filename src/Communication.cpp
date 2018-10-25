@@ -1,14 +1,16 @@
 #include "Communication.h"
 
-Communication::Communication(PinName tx, PinName rx, uint32_t baud): serial(tx, rx, serialBufferSize), led(LED2, 0) {
+Communication::Communication(PinName tx, PinName rx, uint32_t baud): led(LED2, 0) , serial(tx, rx, serialBufferSize) {
   baudRate = baud;
   serial.baud(baud);
   data = &DataManager::getInstance();
+  count = 0; // TO REMOVE
 }
 
 Communication::~Communication() {
   printf("WARN: Destructing Communication...");
   led = false;
+  timer.stop(); // TO REMOVE
   thread.terminate();
 }
 
@@ -17,6 +19,7 @@ void Communication::start() {
   thread.start(callback(this, &Communication::loop));
   wait_ms(50);
   signalPeriod();
+  timer.start(); // TO REMOVE
 }
 
 void Communication::loop() {
@@ -41,7 +44,7 @@ void Communication::loop() {
           sendUpdate();
           break;
 
-        case Communication::STATUS_TIMEOUT:
+        // case Communication::STATUS_TIMEOUT:
         case Communication::STATUS_DATA_TIMEOUT:
           wait_ms(1);
           serial.flush();
@@ -108,7 +111,7 @@ void Communication::sendTimeout() {
 uint8_t Communication::readGoal() {
   bool timedout;
   uint8_t header[P_HEADER_SIZE];
-  timedout = !readBytes(header, P_HEADER_SIZE, PERIOD - 10);
+  timedout = !readBytes(header, P_HEADER_SIZE, PERIOD - 15);
 
   if (timedout) return Communication::STATUS_TIMEOUT;
   if (header[0] != P_HEADER_BYTE || header[1] != P_HEADER_BYTE) return Communication::STATUS_INVALID;
@@ -117,11 +120,20 @@ uint8_t Communication::readGoal() {
   if (header[3] != P_HEADER_SIZE + P_GOAL_DATA_SIZE) return Communication::STATUS_INVALID;
 
   uint8_t data[P_GOAL_DATA_SIZE];
-  timedout = !readBytes(data, P_GOAL_DATA_SIZE, 7);
+  timedout = !readBytes(data, P_GOAL_DATA_SIZE, 14);
 
   if (timedout) return Communication::STATUS_DATA_TIMEOUT;
   if (header[4] != checksum(header[2], header[3], data, P_GOAL_DATA_SIZE))
     return Communication::STATUS_INVALID;
+
+  // TO REMOVE
+  if (timer.read_ms() >= 1000) {
+    this->data->setRealPosition(1, count);
+    timer.reset();
+    count = 0;
+  }
+  count++;
+  // TO REMOVE
 
   updateGoals((int16_t*)data, NUM_SERVOS);
   return Communication::STATUS_DONE;

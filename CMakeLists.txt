@@ -23,6 +23,7 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 include("${PROJECT_SOURCE_DIR}/cmake/mbed_directories.cmake")
 include("${PROJECT_SOURCE_DIR}/cmake/mbed_files.cmake")
 include("${PROJECT_SOURCE_DIR}/cmake/mbed_flags.cmake")
+include("${PROJECT_SOURCE_DIR}/cmake/bno055_files.cmake")
 
 # uncomment below to have a verbose build process
 # set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -39,6 +40,7 @@ add_definitions(${MBED_FLAGS})
 
 include_directories(
   ${MBED_DIRECTORIES}
+  ${BNO055_DIRECTORIES}
   ${LIB_DIR}/XYZrobotServo
   ${LIB_DIR}/BufferSerial
   ${SRC_DIR}/utils
@@ -46,6 +48,7 @@ include_directories(
 
 set(SOURCE_FILES
   ${MBED_FILES}
+  ${BNO055_FILES}
   ${LIB_DIR}/XYZrobotServo/XYZrobotServo.cpp
   ${LIB_DIR}/BufferSerial/BufferSerial.cpp
   ${SRC_DIR}/utils/MockCluster.cpp
