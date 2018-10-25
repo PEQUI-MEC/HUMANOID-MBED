@@ -240,49 +240,29 @@ imu::Quaternion BNO055::getQuat(void) {
 }
 
 bool BNO055::write8(bno055_reg_t reg, char value) {
-  int failure = 0;
-  char reg_to_write = (char)(reg);
+  char cmd[2];
+  cmd[0] = reg;
+  cmd[1] = value;
 
-  failure = i2c.write(_address << 1, &reg_to_write, 1, true);
-  if(failure) printf("Erro ao escrever I2C...\n");
-  wait(0.001);
-
-  failure = i2c.write(_address << 1, &value, 1, false);
-  if (failure) printf("Erro ao escrever I2C...\n");
-  wait(0.001);
-
+  i2c.write(_address << 1, cmd, 1, true);
   return true;
 }
 
 char BNO055::read8(bno055_reg_t reg) {
-  int failure = 0;
+  char reg_to_write = (char)reg;
   char to_read = 0;
-  char to_write = (char)reg;
 
-  failure = i2c.write(_address << 1, &to_write, 1, false);
-  if (failure) printf("Erro ao escrever I2C...\n");
-  wait(0.001);
+  i2c.write(_address << 1, &reg_to_write, 1, true);
+  i2c.read(_address << 1, &to_read, 1, false);
 
-  failure = i2c.read(_address << 1, &to_read, 1, false);
-  if (failure) printf("Erro ao ler I2C...\n");
-  wait(0.001);
-
-  printf(" I2C Read : %d from addr: %d\r\n", to_read, to_write);
   return to_read;
 }
 
 bool BNO055::readLen(bno055_reg_t reg, char* buffer, int len) {
-  int failure = 0;
   char reg_to_write = (char)(reg);
 
-  failure = i2c.write(_address << 1, &reg_to_write, 1, false);
-  if (failure) printf("Erro ao escrever I2C...\n");
-  wait(0.001);
+  i2c.write(_address << 1, &reg_to_write, 1, true);
+  i2c.read(_address << 1, buffer, len, false);
 
-  failure = i2c.read(_address << 1, buffer, len, false);
-  if (failure) printf("Erro ao ler I2C...\n");
-  wait(0.001);
-
-  printf("I2C: Read %d bytes from address %d\r\n", len, reg_to_write);
   return true;
 }
