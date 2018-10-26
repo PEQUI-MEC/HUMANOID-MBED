@@ -10,13 +10,12 @@ Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, 
 {
   serial.baud(baud);
   this->size = ids.size();
-  this->data = &DataManager::getInstance();
 
   for (uint8_t i = 0; i < size; i++) {
     uint8_t id = this->servos[i].getId();
     printf("Enabling servo %d...\n", id);
     DigitalOut en(config::enablePin[id - 1], 0);
-    Thread::wait(INIT_WAIT);
+    wait_ms(INIT_WAIT);
     printf("Servo %d enabled!\n", id);
   }
 }
@@ -25,33 +24,33 @@ Cluster::~Cluster() {
   printf("WARN: Destructing Cluster...");
   this->thread.terminate();
   for (uint8_t i = 0; i < size; i++)
-    DigitalOut en(config::enablePin[this->servos[i].getId() - 1], 0);
+    DigitalOut en(config::enablePin[this->servos[i].getId() - 1], 1);
 }
 
 void Cluster::start() {
   if (CLUSTER_READ_ONLY)
     this->thread.start(callback(this, &Cluster::readPositions));
   else
-    this->thread.start(callback(this, &Cluster::run));
+    this->thread.start(callback(this, &Cluster::loop));
 }
 
-void Cluster::run() {
-  printf("Running cluster...\n");
+void Cluster::loop() {
+  DataManager& data = DataManager::getInstance();
   uint8_t i = 0;
 
-  while(true) {
-    for(i = 0; i < this->size; i++) {
+  while (true) {
+    for (i = 0; i < this->size; i++) {
       XYZrobotServo& servo = this->servos[i];
 
       uint8_t id = servo.getId();
-      uint16_t pos = this->data->getDesiredPosition(id);
+      uint16_t goal = range_map(data.getGoalPosition(id), -18000, 18000, 0, 1023);
 
-      servo.setPosition(pos, PLAYTIME);
+      servo.setPosition(goal, PLAYTIME);
 
       XYZrobotServoStatus status = servo.readStatus();
       if (!servo.getLastError()) {
-        this->data->setRealPosition(id, status.position);
-        this->data->setIBus(id, status.iBus);
+        int16_t pos = range_map(status.position, 0, 1023, -1800, 1800);
+        data.setRealPosition(id, pos);
       }
     }
   }

@@ -2,6 +2,7 @@
 #include "Communication.h"
 #include "config.h"
 #include "mbed.h"
+// #include "Gimbal.h"
 #include "BNO055.h"
 
 Serial pc(USBTX, USBRX, 2000000);
@@ -9,7 +10,7 @@ DigitalOut led1(LED1);
 
 void disable_all_enable_pins();
 
-#ifdef NONE
+#ifndef NONE
 int main() {
   BNO055 bno(BNO055_ADDRESS_B, I2C_SDA, I2C_SCL);
 
@@ -41,7 +42,7 @@ int main() {
 }
 #endif
 
-#ifndef NONE
+#ifdef NONE
 int main() {
   // printf("Initializing...\n");  // TO REMOVE
 
@@ -51,8 +52,11 @@ int main() {
   /**
    * Initializing Clusters
    **/
-  Cluster c2(SERIAL_TX7, SERIAL_RX7, {1, 2, 3});
-  c2.start();
+  // Cluster c2(SERIAL_TX7, SERIAL_RX7, {1, 2, 3});
+  // c2.start();
+
+  Gimbal gimbal;
+  gimbal.start();
 
   /**
    * Initializing Communication

@@ -141,7 +141,7 @@ uint8_t Communication::readGoal() {
 
 void Communication::updateGoals(int16_t* pos, uint8_t size) {
   for (uint8_t i = 0; i < size; i++)
-    data->setDesiredPosition(i, pos[i]);
+    data->setGoalPosition(i, pos[i]);
 }
 
 bool Communication::readBytes(uint8_t* data, uint8_t size, uint16_t timeout) {

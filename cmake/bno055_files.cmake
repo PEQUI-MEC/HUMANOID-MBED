@@ -5,7 +5,6 @@ set(BNO055_DIRECTORIES
 set(BNO055_FILES
   ${LIB_DIR}/BNO055/BNO055.cpp
   ${LIB_DIR}/BNO055/BNO055.h
-  ${LIB_DIR}/BNO055/Adafruit_Sensor.h
   ${LIB_DIR}/BNO055/imumaths.h
   ${LIB_DIR}/BNO055/matrix.h
   ${LIB_DIR}/BNO055/quaternion.h

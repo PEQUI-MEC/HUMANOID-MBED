@@ -3,37 +3,27 @@
 DataManager::DataManager() : vref(VREF) {
   int i = 0;
   for (i = 0; i < NUM_SERVOS; i++)
-    this->desiredPosition[i] = config::initialPosition[i];
+    this->goalPosition[i] = config::initialPosition[i];
 }
 
-uint16_t DataManager::getRealPosition(uint8_t id) {
+int16_t DataManager::getRealPosition(uint8_t id) {
   if ((id <= 0) || (id > NUM_SERVOS)) return -1;
   return this->realPosition[id-1];
 }
 
-uint16_t DataManager::getIBus(uint8_t id) {
+int16_t DataManager::getGoalPosition(uint8_t id) {
   if ((id <= 0) || (id > NUM_SERVOS)) return -1;
-  return this->iBus[id-1];
+  return this->goalPosition[id-1];
 }
 
-uint16_t DataManager::getDesiredPosition(uint8_t id) {
-  if ((id <= 0) || (id > NUM_SERVOS)) return -1;
-  return this->desiredPosition[id-1];
-}
-
-void DataManager::setRealPosition(uint8_t id, uint16_t p) {
+void DataManager::setRealPosition(uint8_t id, int16_t p) {
   if ((id <= 0) || (id > NUM_SERVOS)) return;
   this->realPosition[id-1] = p;
 }
 
-void DataManager::setIBus(uint8_t id, uint16_t i) {
+void DataManager::setGoalPosition(uint8_t id, int16_t p) {
   if ((id <= 0) || (id > NUM_SERVOS)) return;
-  this->iBus[id-1] = i;
-}
-
-void DataManager::setDesiredPosition(uint8_t id, uint16_t p) {
-  if ((id <= 0) || (id > NUM_SERVOS)) return;
-  this->desiredPosition[id-1] = p;
+  this->goalPosition[id-1] = p;
 }
 
 uint8_t DataManager::getVref() {

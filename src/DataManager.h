@@ -7,19 +7,15 @@ class DataManager {
  private:
   DataManager();
 
-  uint16_t realPosition[NUM_SERVOS];
-  uint16_t iBus[NUM_SERVOS];
-  uint16_t desiredPosition[NUM_SERVOS];
+  int16_t realPosition[NUM_SERVOS];
+  int16_t goalPosition[NUM_SERVOS];
   AnalogIn vref;
 
  public:
-  uint16_t getRealPosition(uint8_t id);
-  uint16_t getIBus(uint8_t id);
-  uint16_t getDesiredPosition(uint8_t id);
-
-  void setRealPosition(uint8_t id, uint16_t p);
-  void setIBus(uint8_t id, uint16_t c);
-  void setDesiredPosition(uint8_t id, uint16_t p);
+  int16_t getRealPosition(uint8_t id);
+  int16_t getGoalPosition(uint8_t id);
+  void setRealPosition(uint8_t id, int16_t p);
+  void setGoalPosition(uint8_t id, int16_t p);
 
   uint8_t getVref();
 

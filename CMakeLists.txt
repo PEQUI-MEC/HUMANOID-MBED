@@ -51,10 +51,13 @@ set(SOURCE_FILES
   ${BNO055_FILES}
   ${LIB_DIR}/XYZrobotServo/XYZrobotServo.cpp
   ${LIB_DIR}/BufferSerial/BufferSerial.cpp
+  ${SRC_DIR}/utils/range_map.cpp
   ${SRC_DIR}/utils/MockCluster.cpp
   ${SRC_DIR}/utils/ServoDiagnostics.cpp
   ${SRC_DIR}/utils/Sinusoidal.cpp
+  ${SRC_DIR}/PwmServo.cpp
   ${SRC_DIR}/Cluster.cpp
+  ${SRC_DIR}/Gimbal.cpp
   ${SRC_DIR}/DataManager.cpp
   ${SRC_DIR}/Communication.cpp
   ${SRC_DIR}/config.h

@@ -19,7 +19,7 @@ void MockCluster::run() {
 
   while (true) {
     for (id = 1; id <= this->size; id++) {
-      int16_t pos = data.getDesiredPosition(id);
+      int16_t pos = data.getGoalPosition(id);
       data.setRealPosition(id, pos);
     }
 
