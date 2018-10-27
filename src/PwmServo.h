@@ -3,7 +3,7 @@
 
 class PwmServo {
  public:
-  PwmServo(uint8_t id, PinName pwm_pin, PinName fb_pin, float f, float duty_min,
+  PwmServo(uint8_t id, PinName pwm_pin, PinName fb_pin, float period, float duty_min,
            float duty_max, float fb_min, float fb_max);
   void activate(void);
   void deactivate(void);
@@ -14,7 +14,7 @@ class PwmServo {
 
  private:
   uint8_t id;
-  float frequency;
+  float period;
   float duty_min;
   float duty_max;
   float fb_min;

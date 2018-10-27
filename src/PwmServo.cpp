@@ -1,16 +1,16 @@
 #include "PwmServo.h"
 
-PwmServo::PwmServo(uint8_t id, PinName pwm_pin, PinName fb_pin, float f,
+PwmServo::PwmServo(uint8_t id, PinName pwm_pin, PinName fb_pin, float period,
                    float duty_min, float duty_max, float fb_min, float fb_max)
     : pwm(pwm_pin), feedback(fb_pin) {
   this->id = id;
-  this->frequency = f;
+  this->period = period;
   this->duty_min = duty_min;
   this->duty_max = duty_max;
   this->fb_min = fb_min;
   this->fb_max = fb_max;
 
-  pwm.period(1 / f);
+  pwm.period(period);
   pwm.write(0);
 }
 
