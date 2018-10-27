@@ -128,20 +128,24 @@ uint8_t Communication::readGoal() {
 
   // TO REMOVE
   if (timer.read_ms() >= 1000) {
-    this->data->setRealPosition(1, count);
+    // this->data->setRealPosition(1, count);
     timer.reset();
     count = 0;
   }
   count++;
   // TO REMOVE
 
-  updateGoals((int16_t*)data, NUM_SERVOS);
+  updateGoals(data, P_GOAL_DATA_SIZE);
   return Communication::STATUS_DONE;
 }
 
-void Communication::updateGoals(int16_t* pos, uint8_t size) {
-  for (uint8_t i = 0; i < size; i++)
-    data->setGoalPosition(i, pos[i]);
+void Communication::updateGoals(uint8_t* pos, uint8_t size) {
+  for (uint8_t i = 0; i < size; i++) {
+    if (i % 2) continue;
+    int16_t p = (int16_t)(pos[i] << 8);
+    p = p + (int16_t)(pos[i+1]);
+    data->setGoalPosition((i / 2) + 1, p);
+  }
 }
 
 bool Communication::readBytes(uint8_t* data, uint8_t size, uint16_t timeout) {

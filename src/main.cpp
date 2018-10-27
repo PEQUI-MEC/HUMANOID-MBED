@@ -2,15 +2,15 @@
 #include "Communication.h"
 #include "config.h"
 #include "mbed.h"
-// #include "Gimbal.h"
+#include "Gimbal.h"
 #include "BNO055.h"
 
-Serial pc(USBTX, USBRX, 2000000);
+Serial pc(USBTX, USBRX, 256000);
 DigitalOut led1(LED1);
 
 void disable_all_enable_pins();
 
-#ifndef NONE
+#ifdef NONE
 int main() {
   BNO055 bno(BNO055_ADDRESS_B, I2C_SDA, I2C_SCL);
 
@@ -42,7 +42,7 @@ int main() {
 }
 #endif
 
-#ifdef NONE
+#ifndef NONE
 int main() {
   // printf("Initializing...\n");  // TO REMOVE
 

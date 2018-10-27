@@ -16,7 +16,7 @@ Gimbal::Gimbal()
   wait_ms(INIT_WAIT);
   DigitalOut eny(config::enablePin[servo_yaw.getId()], 0);
   wait_ms(INIT_WAIT);
-  printf("Gimbal enabled!\n");
+  // printf("Gimbal enabled!\n"); // TO REMOVE
 }
 
 Gimbal::~Gimbal() {
@@ -50,6 +50,7 @@ void Gimbal::loop(void) {
       goal = pitch_pos + delta;
     servo_pitch.setPosition(goal);
     data.setRealPosition(1, goal);
+    data.setRealPosition(3, data.getGoalPosition(pitch_id));
 
     delta = data.getGoalPosition(yaw_id) - yaw_pos;
     if (abs(delta) > 2)
@@ -58,6 +59,7 @@ void Gimbal::loop(void) {
       goal = yaw_pos + delta;
     servo_yaw.setPosition(goal);
     data.setRealPosition(2, goal);
+    data.setRealPosition(4, data.getGoalPosition(yaw_id));
 
     wait_ms(5);
   }

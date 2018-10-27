@@ -244,7 +244,7 @@ bool BNO055::write8(bno055_reg_t reg, char value) {
   cmd[0] = reg;
   cmd[1] = value;
 
-  i2c.write(_address << 1, cmd, 1, true);
+  i2c.write(_address << 1, cmd, 2, true);
   return true;
 }
 
