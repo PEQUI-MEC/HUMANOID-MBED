@@ -44,6 +44,7 @@ include_directories(
   ${LIB_DIR}/XYZrobotServo
   ${LIB_DIR}/BufferSerial
   ${SRC_DIR}/utils
+  ${SRC_DIR}/config
 )
 
 set(SOURCE_FILES
@@ -59,6 +60,7 @@ set(SOURCE_FILES
   ${SRC_DIR}/config/xablau.h
   ${SRC_DIR}/config.h
   ${SRC_DIR}/PwmServo.cpp
+  ${SRC_DIR}/PwmCluster.cpp
   ${SRC_DIR}/Cluster.cpp
   ${SRC_DIR}/Gimbal.cpp
   ${SRC_DIR}/DataManager.cpp

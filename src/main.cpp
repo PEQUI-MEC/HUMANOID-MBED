@@ -1,6 +1,7 @@
 #include "Cluster.h"
 #include "Communication.h"
 #include "Gimbal.h"
+#include "PwmCluster.h"
 #include "config.h"
 #include "mbed.h"
 
@@ -22,8 +23,15 @@ int main() {
   /**
    * Initializing Body Servos
    **/
-  // Cluster c2(SERIAL_TX7, SERIAL_RX7, {1, 2, 3});
-  // c2.start();
+#ifdef CFG_X
+  Cluster c2(SERIAL_TX7, SERIAL_RX7, {1, 2, 3});
+  c2.start();
+#endif
+
+#ifdef CFG_F
+  PwmCluster cluster;
+  cluster.start();
+#endif
 
   /**
    * Initializing Communication
