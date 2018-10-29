@@ -1,11 +1,14 @@
 #include "../config.h"
+
+#ifdef CFG_X
+
 #include "BufferSerial.h"
 #include "XYZrobotServo.h"
 #include "mbed.h"
 
 class ServoDiagnostics {
 public:
-  ServoDiagnostics(PinName tx = SERIAL_TX7, PinName rx = SERIAL_RX7, int baud = 115200);
+  ServoDiagnostics(PinName tx, PinName rx, int baud = 115200);
 
   void detectServo(int id);
   void detectServos(int rps = 2);
@@ -21,3 +24,5 @@ private:
   PinName rx;
   BufferSerial* serial;
 };
+
+#endif

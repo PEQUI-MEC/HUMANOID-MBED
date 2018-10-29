@@ -7,7 +7,7 @@
 
 class Communication {
  public:
-  Communication(PinName tx, PinName rx, uint32_t baud = 115200);
+  Communication(PinName tx, PinName rx, uint32_t baud = COM_BAUD_RATE);
   ~Communication();
   void start(void);
 

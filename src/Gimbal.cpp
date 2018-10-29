@@ -1,20 +1,17 @@
 #include "Gimbal.h"
 
 Gimbal::Gimbal()
-    : servo_pitch(NUM_SERVOS - 1, PWM1, AD1, 0.01216, 0.045, 0.195, 0.1, 0.7),
-      servo_yaw(NUM_SERVOS, PWM2, AD2, 0.01216, 0.045, 0.195, 0.1, 0.7),
-      bno(BNO055_ADDRESS_B) {
+    : servo_pitch(NUM_SERVOS - 1, PWM1, AD1),
+      servo_yaw(NUM_SERVOS, PWM2, AD2),
+      bno(BNO055_ADDRESS_B, SDA1, SCL1) {
   DigitalOut red(LED3, 1);
   if (bno.begin()) red = false;
 
-  imu::Vector<3> euler = bno.getVector(BNO055::VECTOR_EULER);
-  yaw_offset = euler.x() * 10;
-
+  // Enable logic is inverted for PwmServos
   DigitalOut enr(config::enablePin[servo_pitch.getId() - 1], 1);
   wait_ms(INIT_WAIT);
   DigitalOut eny(config::enablePin[servo_yaw.getId() - 1], 1);
   wait_ms(INIT_WAIT);
-  // printf("Gimbal enabled!\n"); // TO REMOVE
 }
 
 Gimbal::~Gimbal() {
@@ -52,8 +49,8 @@ void Gimbal::loop(void) {
     data.setRealPosition(yaw_id, yaw_pos);
 
     // Computing pitch goal position on servo_pitch
-    to = data.getGoalPosition(pitch_id);
     from = pitch_pos;
+    to = data.getGoalPosition(pitch_id);
 
     if (from < 0) from += 3600;
     if (from > to) {
@@ -76,8 +73,8 @@ void Gimbal::loop(void) {
     }
 
     // Computing yaw goal position on servo_yaw
+    from = yaw_pos;
     to = data.getGoalPosition(yaw_id);
-    from = (yaw_pos);
 
     if (from < 0) from += 3600;
     if (from > to) {

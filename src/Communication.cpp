@@ -62,68 +62,68 @@ void Communication::loop() {
 }
 
 void Communication::signalPeriod() {
-  timeout.attach(callback(this, &Communication::signalPeriod), (float)PERIOD / 1000.0);
+  timeout.attach(callback(this, &Communication::signalPeriod), (float)COM_PERIOD / 1000.0);
   thread.signal_set(Communication::SIGNAL_CONTINUE);
 }
 
 void Communication::sendUpdate() {
-  uint8_t header[P_HEADER_SIZE];
-  header[0] = P_HEADER_BYTE;
-  header[1] = P_HEADER_BYTE;
-  header[2] = P_UPDATE_ID;
-  header[3] = P_HEADER_SIZE + P_UPDATE_DATA_SIZE;
+  uint8_t header[COM_HEADER_SIZE];
+  header[0] = COM_HEADER_BYTE;
+  header[1] = COM_HEADER_BYTE;
+  header[2] = COM_UPDATE_ID;
+  header[3] = COM_HEADER_SIZE + COM_UPDATE_DATA_SIZE;
 
-  uint8_t data[P_UPDATE_DATA_SIZE];
+  uint8_t data[COM_UPDATE_DATA_SIZE];
   for (uint8_t i = 0; i < NUM_SERVOS; i++) {
     uint16_t pos = this->data->getRealPosition(i+1);
     data[i * 2] = (pos >> 8) & 0xFF;
     data[(i * 2) + 1] = pos & 0xFF;
   }
 
-  data[P_UPDATE_DATA_SIZE - 1] = this->data->getVref();
+  data[COM_UPDATE_DATA_SIZE - 1] = this->data->getVref();
 
-  header[4] = checksum(header[2], header[3], data, P_UPDATE_DATA_SIZE);
+  header[4] = checksum(header[2], header[3], data, COM_UPDATE_DATA_SIZE);
 
-  writeBytes(header, P_HEADER_SIZE);
-  writeBytes(data, P_UPDATE_DATA_SIZE);
+  writeBytes(header, COM_HEADER_SIZE);
+  writeBytes(data, COM_UPDATE_DATA_SIZE);
 }
 
 void Communication::sendError() {
-  uint8_t header[P_HEADER_SIZE];
-  header[0] = P_HEADER_BYTE;
-  header[1] = P_HEADER_BYTE;
-  header[2] = P_ERROR_ID;
-  header[3] = P_HEADER_SIZE;
-  header[4] = P_ERROR_ID ^ P_HEADER_SIZE;
-  writeBytes(header, P_HEADER_SIZE);
+  uint8_t header[COM_HEADER_SIZE];
+  header[0] = COM_HEADER_BYTE;
+  header[1] = COM_HEADER_BYTE;
+  header[2] = COM_ERROR_ID;
+  header[3] = COM_HEADER_SIZE;
+  header[4] = COM_ERROR_ID ^ COM_HEADER_SIZE;
+  writeBytes(header, COM_HEADER_SIZE);
 }
 
 void Communication::sendTimeout() {
-  uint8_t header[P_HEADER_SIZE];
-  header[0] = P_HEADER_BYTE;
-  header[1] = P_HEADER_BYTE;
-  header[2] = P_TIMEOUT_ID;
-  header[3] = P_HEADER_SIZE;
-  header[4] = P_TIMEOUT_ID ^ P_HEADER_SIZE;
-  writeBytes(header, P_HEADER_SIZE);
+  uint8_t header[COM_HEADER_SIZE];
+  header[0] = COM_HEADER_BYTE;
+  header[1] = COM_HEADER_BYTE;
+  header[2] = COM_TIMEOUT_ID;
+  header[3] = COM_HEADER_SIZE;
+  header[4] = COM_TIMEOUT_ID ^ COM_HEADER_SIZE;
+  writeBytes(header, COM_HEADER_SIZE);
 }
 
 uint8_t Communication::readGoal() {
   bool timedout;
-  uint8_t header[P_HEADER_SIZE];
-  timedout = !readBytes(header, P_HEADER_SIZE, PERIOD - 15);
+  uint8_t header[COM_HEADER_SIZE];
+  timedout = !readBytes(header, COM_HEADER_SIZE, COM_PERIOD - 15);
 
   if (timedout) return Communication::STATUS_TIMEOUT;
-  if (header[0] != P_HEADER_BYTE || header[1] != P_HEADER_BYTE) return Communication::STATUS_INVALID;
-  if (header[2] == P_ERROR_ID) return Communication::STATUS_ERROR;
-  if (header[2] != P_GOAL_ID) return Communication::STATUS_INVALID;
-  if (header[3] != P_HEADER_SIZE + P_GOAL_DATA_SIZE) return Communication::STATUS_INVALID;
+  if (header[0] != COM_HEADER_BYTE || header[1] != COM_HEADER_BYTE) return Communication::STATUS_INVALID;
+  if (header[2] == COM_ERROR_ID) return Communication::STATUS_ERROR;
+  if (header[2] != COM_GOAL_ID) return Communication::STATUS_INVALID;
+  if (header[3] != COM_HEADER_SIZE + COM_GOAL_DATA_SIZE) return Communication::STATUS_INVALID;
 
-  uint8_t data[P_GOAL_DATA_SIZE];
-  timedout = !readBytes(data, P_GOAL_DATA_SIZE, 14);
+  uint8_t data[COM_GOAL_DATA_SIZE];
+  timedout = !readBytes(data, COM_GOAL_DATA_SIZE, 14);
 
   if (timedout) return Communication::STATUS_DATA_TIMEOUT;
-  if (header[4] != checksum(header[2], header[3], data, P_GOAL_DATA_SIZE))
+  if (header[4] != checksum(header[2], header[3], data, COM_GOAL_DATA_SIZE))
     return Communication::STATUS_INVALID;
 
   // TO REMOVE
@@ -135,7 +135,7 @@ uint8_t Communication::readGoal() {
   count++;
   // TO REMOVE
 
-  updateGoals(data, P_GOAL_DATA_SIZE);
+  updateGoals(data, COM_GOAL_DATA_SIZE);
   return Communication::STATUS_DONE;
 }
 

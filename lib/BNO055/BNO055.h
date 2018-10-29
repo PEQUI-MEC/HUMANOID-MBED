@@ -218,7 +218,7 @@ class BNO055 {
     VECTOR_GRAVITY = BNO055_GRAVITY_DATA_X_LSB_ADDR
   } vector_type_t;
 
-  BNO055(uint8_t address = BNO055_ADDRESS_A, PinName sda = I2C_SDA, PinName scl = I2C_SCL);
+  BNO055(uint8_t address, PinName sda, PinName scl);
 
   bool begin(bno055_opmode_t mode = OPERATION_MODE_NDOF);
   void setMode(bno055_opmode_t mode);

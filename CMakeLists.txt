@@ -55,12 +55,14 @@ set(SOURCE_FILES
   ${SRC_DIR}/utils/MockCluster.cpp
   ${SRC_DIR}/utils/ServoDiagnostics.cpp
   ${SRC_DIR}/utils/Sinusoidal.cpp
+  ${SRC_DIR}/config/frank.h
+  ${SRC_DIR}/config/xablau.h
+  ${SRC_DIR}/config.h
   ${SRC_DIR}/PwmServo.cpp
   ${SRC_DIR}/Cluster.cpp
   ${SRC_DIR}/Gimbal.cpp
   ${SRC_DIR}/DataManager.cpp
   ${SRC_DIR}/Communication.cpp
-  ${SRC_DIR}/config.h
   ${SRC_DIR}/main.cpp
 )
 

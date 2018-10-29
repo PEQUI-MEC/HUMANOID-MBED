@@ -1,3 +1,5 @@
+#pragma once
+
 #include <array>
 #include <cmath>
 #include "BNO055.h"
@@ -14,8 +16,6 @@ class Gimbal {
   void loop(void);
 
  private:
-  uint16_t yaw_offset;
-
   PwmServo servo_pitch;
   PwmServo servo_yaw;
   Thread thread;

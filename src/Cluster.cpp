@@ -1,5 +1,7 @@
 #include "Cluster.h"
 
+#ifdef CFG_X
+
 Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, uint32_t baud)
   : servos({{
         {{ids[0]}, this->serial, baud},
@@ -13,10 +15,8 @@ Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, 
 
   for (uint8_t i = 0; i < size; i++) {
     uint8_t id = this->servos[i].getId();
-    printf("Enabling servo %d...\n", id);
-    DigitalOut en(config::enablePin[id - 1], 0);
+    DigitalOut en(config::enablePin[id - 1], ENABLE_ACTIVE);
     wait_ms(INIT_WAIT);
-    printf("Servo %d enabled!\n", id);
   }
 }
 
@@ -24,7 +24,7 @@ Cluster::~Cluster() {
   printf("WARN: Destructing Cluster...");
   this->thread.terminate();
   for (uint8_t i = 0; i < size; i++)
-    DigitalOut en(config::enablePin[this->servos[i].getId() - 1], 1);
+    DigitalOut en(config::enablePin[this->servos[i].getId() - 1], !ENABLE_ACTIVE);
 }
 
 void Cluster::start() {
@@ -43,7 +43,7 @@ void Cluster::loop() {
       XYZrobotServo& servo = this->servos[i];
 
       uint8_t id = servo.getId();
-      uint16_t goal = range_map(data.getGoalPosition(id), -18000, 18000, 0, 1023);
+      uint16_t goal = range_map(data.getGoalPosition(id), -1800, 1800, 0, 1023);
 
       servo.setPosition(goal, PLAYTIME);
 
@@ -71,3 +71,5 @@ void Cluster::readPositions() {
     }
   }
 }
+
+#endif

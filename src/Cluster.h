@@ -1,10 +1,13 @@
 #pragma once
 
+#include "config.h"
+
+#ifdef CFG_X
+
 #include <array>
 #include "BufferSerial.h"
 #include "DataManager.h"
 #include "XYZrobotServo.h"
-#include "config.h"
 #include "mbed.h"
 #include "utils/range_map.h"
 
@@ -22,3 +25,5 @@ class Cluster {
   BufferSerial serial;
   Thread thread;
 };
+
+#endif
