@@ -1,5 +1,7 @@
 #include "Communication.h"
 
+#ifdef CFG_COM_SYNC
+
 Communication::Communication(PinName tx, PinName rx, uint32_t baud): led(LED2, 0) , serial(tx, rx, serialBufferSize) {
   baudRate = baud;
   serial.baud(baud);
@@ -175,3 +177,5 @@ uint8_t Communication::checksum(uint8_t cmd, uint8_t size, uint8_t* data, uint8_
   for (uint8_t i = 0; i < dataSize; i++) checksum ^= data[i];
   return checksum;
 }
+
+#endif

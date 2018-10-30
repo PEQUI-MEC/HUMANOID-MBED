@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#ifdef CFG_X
+#ifdef CFG_ROBOT_X
 
 #include <array>
 #include "BufferSerial.h"

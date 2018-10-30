@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#ifdef CFG_F
+#ifdef CFG_ROBOT_F
 
 #include <array>
 #include "DataManager.h"

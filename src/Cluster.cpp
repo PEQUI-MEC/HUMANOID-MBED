@@ -1,6 +1,6 @@
 #include "Cluster.h"
 
-#ifdef CFG_X
+#ifdef CFG_ROBOT_X
 
 Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, uint32_t baud)
   : servos({{
@@ -43,13 +43,13 @@ void Cluster::loop() {
       XYZrobotServo& servo = this->servos[i];
 
       uint8_t id = servo.getId();
-      uint16_t goal = range_map(data.getGoalPosition(id), -1800, 1800, 0, 1023);
+      uint16_t goal = range_map(data.getGoalPosition(id), -1800, 1500, 0, 1023);
 
       servo.setPosition(goal, PLAYTIME);
 
       XYZrobotServoStatus status = servo.readStatus();
       if (!servo.getLastError()) {
-        int16_t pos = range_map(status.position, 0, 1023, -1800, 1800);
+        int16_t pos = range_map(status.position, 0, 1023, -1800, 1500);
         data.setRealPosition(id, pos);
       }
     }

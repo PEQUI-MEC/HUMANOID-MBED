@@ -1,6 +1,6 @@
 #include "PwmCluster.h"
 
-#ifdef CFG_F
+#ifdef CFG_ROBOT_F
 
 PwmCluster::PwmCluster()
   : servos({{

@@ -1,8 +1,11 @@
 #pragma once
 
+#include "config.h"
+
+#ifdef CFG_COM_SYNC
+
 #include "BufferSerial.h"
 #include "DataManager.h"
-#include "config.h"
 #include "mbed.h"
 
 class Communication {
@@ -45,3 +48,5 @@ class Communication {
   BufferSerial serial;
   DataManager* data;
 };
+
+#endif

@@ -65,6 +65,7 @@ set(SOURCE_FILES
   ${SRC_DIR}/Gimbal.cpp
   ${SRC_DIR}/DataManager.cpp
   ${SRC_DIR}/Communication.cpp
+  ${SRC_DIR}/AsyncCommunication.cpp
   ${SRC_DIR}/main.cpp
 )
 

@@ -1,3 +1,4 @@
+#include "AsyncCommunication.h"
 #include "Cluster.h"
 #include "Communication.h"
 #include "Gimbal.h"
@@ -5,8 +6,9 @@
 #include "config.h"
 #include "mbed.h"
 
+// TODO: Configurar tensão admisivel dos XYZ
+
 Serial pc(USBTX, USBRX, COM_BAUD_RATE);
-DigitalOut led1(LED1);
 
 void disable_all_enable_pins();
 
@@ -23,12 +25,12 @@ int main() {
   /**
    * Initializing Body Servos
    **/
-#ifdef CFG_X
+#ifdef CFG_ROBOT_X
   Cluster c2(SERIAL_TX7, SERIAL_RX7, {1, 2, 3});
   c2.start();
 #endif
 
-#ifdef CFG_F
+#ifdef CFG_ROBOT_F
   PwmCluster cluster;
   cluster.start();
 #endif
@@ -36,16 +38,21 @@ int main() {
   /**
    * Initializing Communication
    **/
+#ifdef CFG_COM_SYNC
   Communication com(USBTX, USBRX);
   com.start();
+#endif
+
+#ifdef CFG_COM_ASYNC
+  AsyncCommunication acom(USBTX, USBRX);
+  acom.start();
+#endif
 
   /**
    * Main thread waits forever
    **/
-  while (true) {
-    led1 = true;
-    Thread::signal_wait(2);
-  }
+  DigitalOut led1(LED1, 1);
+  while (true) Thread::signal_wait(2);
 }
 
 void disable_all_enable_pins() {
