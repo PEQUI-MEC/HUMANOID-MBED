@@ -1,6 +1,6 @@
 #include "../config.h"
 
-#ifdef CFG_X
+#ifdef CFG_ROBOT_X
 
 #include "BufferSerial.h"
 #include "XYZrobotServo.h"

@@ -31,7 +31,7 @@ void AsyncCommunication::loop() {
     Thread::signal_clr(AsyncCommunication::SIGNAL_CONTINUE);
     sendMessage();
     processMessage();
-    led = !led;
+    // led = !led;
   }
 }
 
@@ -59,17 +59,17 @@ bool AsyncCommunication::storeData(uint8_t data) {
     return false;
 
   buffer[bindex] = data;
+  bindex++;
   return true;
 }
 
 void AsyncCommunication::moveMessage() {
-  if (bindex != COM_RECEIVE_SIZE - 2)
+  if (bindex != COM_RECEIVE_SIZE - 1)
     return;
 
   message[0] = 0xF1;
-  message[1] = 0xF1;
   for (uint8_t i = 0; i < bindex; i++)
-    message[i + 2] = buffer[i];
+    message[i + 1] = buffer[i];
 
   messageReady = true;
 }
@@ -85,11 +85,22 @@ void AsyncCommunication::sendMessage() {
   header[1] = COM_HEADER_BYTE;
 
   uint8_t data[COM_TRANSMIT_DATA_SIZE];
-  for (uint8_t i = 0; i < NUM_SERVOS; i++) {
-    int16_t pos = this->data->getRealPosition(i + 1);
-    data[i * 2] = (pos >> 8) & 0xFF;
-    data[(i * 2) + 1] = pos & 0xFF;
-  }
+
+  int16_t pos = this->data->getRealPosition(NUM_SERVOS - 1);
+  data[0] = (pos >> 8) & 0xFF;
+  data[1] = pos & 0xFF;
+
+  pos = this->data->getRealPosition(NUM_SERVOS);
+  data[2] = (pos >> 8) & 0xFF;
+  data[3] = pos & 0xFF;
+
+  pos = this->data->getPitchServoPosition();
+  data[4] = (pos >> 8) & 0xFF;
+  data[5] = pos & 0xFF;
+
+  pos = this->data->getYawServoPosition();
+  data[6] = (pos >> 8) & 0xFF;
+  data[7] = pos & 0xFF;
 
   data[COM_TRANSMIT_DATA_SIZE - 1] = this->data->getVref();
 
@@ -97,11 +108,15 @@ void AsyncCommunication::sendMessage() {
 
   writeBytes(header, COM_HEADER_SIZE);
   writeBytes(data, COM_TRANSMIT_DATA_SIZE);
+  serial.putc(COM_FOOTER_BYTE);
+  serial.putc(COM_FOOTER_BYTE);
 }
 
 void AsyncCommunication::processMessage() {
   if (!messageReady) return;
   if (message[2] != checksum(message)) return;
+
+  led = !led;
 
   for (uint8_t i = 0; i < COM_RECEIVE_DATA_SIZE; i++) {
     if (i % 2) continue;
@@ -114,13 +129,14 @@ void AsyncCommunication::processMessage() {
 }
 
 void AsyncCommunication::writeBytes(uint8_t* data, uint8_t size) {
-  for (uint8_t i = 0; i < size; i++)
+  for (uint8_t i = 0; i < size; i++) {
     serial.putc(data[i]);
+  }
 }
 
 uint8_t AsyncCommunication::checksum(uint8_t* data, uint8_t dataSize) {
-  uint8_t checksum = 0;
-  for (uint8_t i = 0; i < dataSize; i++) checksum ^= data[i];
+  uint8_t checksum = data[0];
+  for (uint8_t i = 1; i < dataSize; i++) checksum ^= data[i];
   return checksum;
 }
 

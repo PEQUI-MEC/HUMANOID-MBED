@@ -214,7 +214,7 @@ void XYZrobotServo::readAck(uint8_t cmd,
 
   // uint8_t byteCount = serial->readBytes(header, sizeof(header));
   // if (byteCount != sizeof(header))
-  success = readBytes(header, 7, 500);
+  success = readBytes(header, 7, 20);
   if (!success) {
     lastError = XYZrobotServoError::HeaderTimeout;
     return;
@@ -246,7 +246,7 @@ void XYZrobotServo::readAck(uint8_t cmd,
   }
 
   if (data1Size) {
-    success = readBytes(data1, data1Size, 1000);
+    success = readBytes(data1, data1Size, 20);
     if (!success) {
       lastError = XYZrobotServoError::Data1Timeout;
       return;

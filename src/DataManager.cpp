@@ -26,6 +26,22 @@ void DataManager::setGoalPosition(uint8_t id, int16_t p) {
   this->goalPosition[id-1] = p;
 }
 
+int16_t DataManager::getPitchServoPosition() {
+  return servo_pos_pitch;
+}
+
+int16_t DataManager::getYawServoPosition() {
+  return servo_pos_yaw;
+}
+
+void DataManager::setPitchServoPosition(int16_t p) {
+  servo_pos_pitch = p;
+}
+
+void DataManager::setYawServoPosition(int16_t p) {
+  servo_pos_yaw = p;
+}
+
 uint8_t DataManager::getVref() {
   return (uint8_t)(0xFF * vref.read());
 }

@@ -5,7 +5,7 @@ Gimbal::Gimbal()
       servo_yaw(NUM_SERVOS, PWM2, AD2),
       bno(BNO055_ADDRESS_B, SDA1, SCL1) {
   DigitalOut red(LED3, 1);
-  if (bno.begin()) red = false;
+  if (bno.begin(BNO055::OPERATION_MODE_IMUPLUS)) red = false;
 
   // Enable logic is inverted for PwmServos
   DigitalOut enr(config::enablePin[servo_pitch.getId() - 1], 1);
@@ -29,9 +29,9 @@ void Gimbal::loop(void) {
   DataManager& data = DataManager::getInstance();
   uint8_t pitch_id = servo_pitch.getId();
   uint8_t yaw_id = servo_yaw.getId();
-  int16_t goal, pitch_pos, yaw_pos;
+  int16_t goal, pitch_pos, yaw_pos, roll_pos;
 
-  int16_t servo_pos_yall = 0;
+  int16_t servo_pos_yaw = 0;
   int16_t servo_pos_pitch = 0;
 
   int16_t from;
@@ -41,15 +41,21 @@ void Gimbal::loop(void) {
   int16_t min_angle;
 
   while (true) {
-    imu::Vector<3> euler = bno.getVector(BNO055::VECTOR_EULER);
-    pitch_pos = (euler.y() + 180) * 10;
-    yaw_pos = euler.x() * 10;
+    // uint8_t system, gyro, accel, mag = 0;
+    // bno.getCalibration(&system, &gyro, &accel, &mag);
 
-    data.setRealPosition(pitch_id, pitch_pos);
+    imu::Vector<3> euler = bno.getVector(BNO055::VECTOR_EULER);
+    pitch_pos = euler.y() * 10;
+    yaw_pos = euler.x() * 10;
+    roll_pos = euler.z() * 10;
+
+    int new_pitch = (cos((yaw_pos/10) * M_PI /180)* (pitch_pos/10) + sin((yaw_pos/10) * M_PI/180) * (roll_pos/10)) * 10;
+
+    data.setRealPosition(pitch_id, new_pitch);
     data.setRealPosition(yaw_id, yaw_pos);
 
     // Computing pitch goal position on servo_pitch
-    from = pitch_pos;
+    from = new_pitch + 1800;
     to = data.getGoalPosition(pitch_id);
 
     if (from < 0) from += 3600;
@@ -69,6 +75,7 @@ void Gimbal::loop(void) {
         goal = (servo_pos_pitch - 2 > -300) ? servo_pos_pitch - 2 : -300;
 
       servo_pos_pitch = goal;
+      data.setPitchServoPosition(servo_pos_pitch);
       servo_pitch.setPosition(goal);
     }
 
@@ -88,11 +95,12 @@ void Gimbal::loop(void) {
     min_angle = (esq_angle < dir_angle) ? esq_angle : dir_angle;
     if (min_angle > 20) {
       if (dir_angle > esq_angle)
-        goal = (servo_pos_yall + 7 < 900) ? servo_pos_yall + 7 : 900;
+        goal = (servo_pos_yaw + 7 < 900) ? servo_pos_yaw + 7 : 900;
       else
-        goal = (servo_pos_yall - 7 > -900) ? servo_pos_yall - 7 : -900;
+        goal = (servo_pos_yaw - 7 > -900) ? servo_pos_yaw - 7 : -900;
 
-      servo_pos_yall = goal;
+      servo_pos_yaw = goal;
+      data.setYawServoPosition(servo_pos_yaw);
       servo_yaw.setPosition(goal);
     }
 

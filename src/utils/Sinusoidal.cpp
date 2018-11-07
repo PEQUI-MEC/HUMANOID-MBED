@@ -1,6 +1,6 @@
 #include "Sinusoidal.h"
 
-#ifdef CFG_X
+#ifdef CFG_ROBOT_X
 
 Sinusoidal::Sinusoidal(uint8_t id, PinName tx, PinName rx, uint32_t baud): serial(tx, rx, 32) {
   this->id = id;
@@ -19,9 +19,9 @@ void Sinusoidal::run(uint16_t min, uint16_t max, float f, uint8_t playtime) {
   timer.start();
   float t;
 
-  int amplitude = (max - min)/2;
-  int referencia = min + amplitude;
-  int pos = min;
+  uint16_t amplitude = (max - min)/2;
+  uint16_t referencia = min + amplitude;
+  uint16_t pos = min;
 
   while(true) {
     // wait_ms(50);
