@@ -4,27 +4,30 @@
 
 Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, uint32_t baud)
   : servos({{
-        {{ids[0]}, this->serial, baud},
-        {{ids[1]}, this->serial, baud},
-        {{ids[2]}, this->serial, baud},
+        {1, this->serial, baud, false, 0},
+        {2, this->serial, baud, false, 0},
+        {3, this->serial, baud, false, 0},
+        {4, this->serial, baud, false, 0},
+        {5, this->serial, baud, false, 0},
+        {6, this->serial, baud, false, 0},
+        {7, this->serial, baud, false, 0},
+        {8, this->serial, baud, false, 0},
+        {9, this->serial, baud, false, 0},
+        {10, this->serial, baud, false, 0},
+        {11, this->serial, baud, false, 0},
+        {12, this->serial, baud, false, 0},
     }}),
     serial(tx, rx, 32)
 {
   serial.baud(baud);
   this->size = ids.size();
-
-  for (uint8_t i = 0; i < size; i++) {
-    uint8_t id = this->servos[i].getId();
-    DigitalOut en(config::enablePin[id - 1], ENABLE_ACTIVE);
-    wait_ms(INIT_WAIT);
-  }
 }
 
 Cluster::~Cluster() {
   printf("WARN: Destructing Cluster...");
   this->thread.terminate();
   for (uint8_t i = 0; i < size; i++)
-    DigitalOut en(config::enablePin[this->servos[i].getId() - 1], !ENABLE_ACTIVE);
+    this->servos[i].disable();
 }
 
 void Cluster::start() {
@@ -40,18 +43,14 @@ void Cluster::loop() {
 
   while (true) {
     for (i = 0; i < this->size; i++) {
-      XYZrobotServo& servo = this->servos[i];
+      uint8_t id = this->servos[i].getId();
+      this->servos[i].setPosition(data.getGoalPosition(id));
 
-      uint8_t id = servo.getId();
-      uint16_t goal = range_map(data.getGoalPosition(id), -1800, 1500, 0, 1023);
-
-      servo.setPosition(goal, PLAYTIME);
-
-      XYZrobotServoStatus status = servo.readStatus();
-      if (!servo.getLastError()) {
-        int16_t pos = range_map(status.position, 0, 1023, -1800, 1500);
-        data.setRealPosition(id, pos);
-      }
+      // XYZrobotServoStatus status = servo.readStatus();
+      // if (!servo.getLastError()) {
+      //   int16_t pos = range_map(status.position, 0, 1023, -1800, 1500);
+      //   data.setRealPosition(id, pos);
+      // }
     }
   }
 }
@@ -61,13 +60,13 @@ void Cluster::readPositions() {
 
   while(true) {
     for(i = 0; i < this->size; i++) {
-      XYZrobotServo& servo = this->servos[i];
+      SerialServo& servo = this->servos[i];
 
-      XYZrobotServoStatus status = servo.readStatus();
+      int16_t pos = servo.readPosition();
       if (servo.getLastError())
         printf("Servo %d: Error %d\n", servo.getId(), servo.getLastError());
       else
-        printf("Servo %d: %d %d\n", servo.getId(), status.position, status.iBus);
+        printf("Servo %d: %d\n", servo.getId(), pos);
     }
   }
 }

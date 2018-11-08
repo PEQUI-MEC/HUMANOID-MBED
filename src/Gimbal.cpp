@@ -6,19 +6,11 @@ Gimbal::Gimbal()
       bno(BNO055_ADDRESS_B, SDA1, SCL1) {
   DigitalOut red(LED3, 1);
   if (bno.begin(BNO055::OPERATION_MODE_IMUPLUS)) red = false;
-
-  // Enable logic is inverted for PwmServos
-  DigitalOut enr(config::enablePin[servo_pitch.getId() - 1], 1);
-  wait_ms(INIT_WAIT);
-  DigitalOut eny(config::enablePin[servo_yaw.getId() - 1], 1);
-  wait_ms(INIT_WAIT);
 }
 
 Gimbal::~Gimbal() {
   printf("WARN: Destructing Gimbal...");
   thread.terminate();
-  DigitalOut enr(config::enablePin[servo_pitch.getId()], 0);
-  DigitalOut eny(config::enablePin[servo_yaw.getId()], 0);
 }
 
 void Gimbal::start(void) {
@@ -49,7 +41,7 @@ void Gimbal::loop(void) {
     yaw_pos = euler.x() * 10;
     roll_pos = euler.z() * 10;
 
-    int new_pitch = (cos((yaw_pos/10) * M_PI /180)* (pitch_pos/10) + sin((yaw_pos/10) * M_PI/180) * (roll_pos/10)) * 10;
+    int16_t new_pitch = (cos((yaw_pos/10) * M_PI /180)* (pitch_pos/10) + sin((yaw_pos/10) * M_PI/180) * (roll_pos/10)) * 10;
 
     data.setRealPosition(pitch_id, new_pitch);
     data.setRealPosition(yaw_id, yaw_pos);

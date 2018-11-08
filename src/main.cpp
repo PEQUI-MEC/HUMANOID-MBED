@@ -7,14 +7,17 @@
 #include "mbed.h"
 
 // TODO: Configurar tensão admisivel dos XYZ
+// TODO: Configurar sentido reverso de rotação
+// TODO: Configurar offset de movimento
+// TODO: Implementar procedimento para o caso de o VREF ser abaixo de um limiar
 
 Serial pc(USBTX, USBRX, COM_BAUD_RATE);
 
-void disable_all_enable_pins();
+void change_enable_pins(bool state);
 
 int main() {
-  disable_all_enable_pins();
-  wait_ms(1000);
+  DigitalOut enable(ENABLE, !ENABLE_ACTIVE);
+  wait_ms(500);
 
   /**
    * Initializing Gimbal
@@ -53,9 +56,4 @@ int main() {
    **/
   DigitalOut led1(LED1, 1);
   while (true) Thread::signal_wait(2);
-}
-
-void disable_all_enable_pins() {
-  for (uint8_t i = 0; i < NUM_SERVOS; i++)
-    DigitalOut en(config::enablePin[i], !ENABLE_ACTIVE);
 }

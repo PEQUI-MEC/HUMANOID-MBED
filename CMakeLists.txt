@@ -60,6 +60,7 @@ set(SOURCE_FILES
   ${SRC_DIR}/config/xablau.h
   ${SRC_DIR}/config.h
   ${SRC_DIR}/PwmServo.cpp
+  ${SRC_DIR}/SerialServo.cpp
   ${SRC_DIR}/PwmCluster.cpp
   ${SRC_DIR}/Cluster.cpp
   ${SRC_DIR}/Gimbal.cpp

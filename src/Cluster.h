@@ -7,7 +7,7 @@
 #include <array>
 #include "BufferSerial.h"
 #include "DataManager.h"
-#include "XYZrobotServo.h"
+#include "SerialServo.h"
 #include "mbed.h"
 #include "utils/range_map.h"
 
@@ -21,7 +21,7 @@ class Cluster {
 
  private:
   uint8_t size;
-  std::array<XYZrobotServo, CLUSTER_SIZE> servos;
+  std::array<SerialServo, CLUSTER_SIZE> servos;
   BufferSerial serial;
   Thread thread;
 };
