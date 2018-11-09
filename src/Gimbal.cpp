@@ -6,6 +6,9 @@ Gimbal::Gimbal()
       bno(BNO055_ADDRESS_B, SDA1, SCL1) {
   DigitalOut red(LED3, 1);
   if (bno.begin(BNO055::OPERATION_MODE_IMUPLUS)) red = false;
+
+  DigitalOut en(ENABLE_GY, 1);
+  wait_ms(INIT_WAIT);
 }
 
 Gimbal::~Gimbal() {

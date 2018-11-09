@@ -4,18 +4,18 @@
 
 Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, uint32_t baud)
   : servos({{
-        {1, this->serial, baud, false, 0},
+        {1, this->serial, baud, true, 0},
         {2, this->serial, baud, false, 0},
-        {3, this->serial, baud, false, 0},
-        {4, this->serial, baud, false, 0},
-        {5, this->serial, baud, false, 0},
-        {6, this->serial, baud, false, 0},
-        {7, this->serial, baud, false, 0},
-        {8, this->serial, baud, false, 0},
+        {3, this->serial, baud, true, 0},
+        {4, this->serial, baud, true, 0},
+        {5, this->serial, baud, true, 0},
+        {6, this->serial, baud, false, 45},
+        {7, this->serial, baud, true, 0},
+        {8, this->serial, baud, true, 0},
         {9, this->serial, baud, false, 0},
         {10, this->serial, baud, false, 0},
-        {11, this->serial, baud, false, 0},
-        {12, this->serial, baud, false, 0},
+        {11, this->serial, baud, true, 0},
+        {12, this->serial, baud, false, -45}
     }}),
     serial(tx, rx, 32)
 {

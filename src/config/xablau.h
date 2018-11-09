@@ -19,6 +19,7 @@
 #define SERIAL_TX7 PE_8
 #define SERIAL_RX7 PE_7
 #define ENABLE PG_0
+#define ENABLE_GY PA_13
 #define PWM1 PF_6
 #define PWM2 PA_15
 #define AD1 PF_7
