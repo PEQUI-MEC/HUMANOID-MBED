@@ -23,6 +23,7 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 include("${PROJECT_SOURCE_DIR}/cmake/mbed_directories.cmake")
 include("${PROJECT_SOURCE_DIR}/cmake/mbed_files.cmake")
 include("${PROJECT_SOURCE_DIR}/cmake/mbed_flags.cmake")
+include("${PROJECT_SOURCE_DIR}/cmake/bno055_files.cmake")
 
 # uncomment below to have a verbose build process
 # set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -39,15 +40,34 @@ add_definitions(${MBED_FLAGS})
 
 include_directories(
   ${MBED_DIRECTORIES}
+  ${BNO055_DIRECTORIES}
   ${LIB_DIR}/XYZrobotServo
   ${LIB_DIR}/BufferSerial
+  ${SRC_DIR}/utils
+  ${SRC_DIR}/config
 )
 
 set(SOURCE_FILES
   ${MBED_FILES}
-  ${SRC_DIR}/main.cpp
+  ${BNO055_FILES}
   ${LIB_DIR}/XYZrobotServo/XYZrobotServo.cpp
   ${LIB_DIR}/BufferSerial/BufferSerial.cpp
+  ${SRC_DIR}/utils/range_map.cpp
+  ${SRC_DIR}/utils/MockCluster.cpp
+  ${SRC_DIR}/utils/ServoDiagnostics.cpp
+  ${SRC_DIR}/utils/Sinusoidal.cpp
+  ${SRC_DIR}/config/frank.h
+  ${SRC_DIR}/config/xablau.h
+  ${SRC_DIR}/config.h
+  ${SRC_DIR}/PwmServo.cpp
+  ${SRC_DIR}/SerialServo.cpp
+  ${SRC_DIR}/PwmCluster.cpp
+  ${SRC_DIR}/Cluster.cpp
+  ${SRC_DIR}/Gimbal.cpp
+  ${SRC_DIR}/DataManager.cpp
+  ${SRC_DIR}/Communication.cpp
+  ${SRC_DIR}/AsyncCommunication.cpp
+  ${SRC_DIR}/main.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
