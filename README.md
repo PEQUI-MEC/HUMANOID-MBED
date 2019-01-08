@@ -55,9 +55,8 @@ A comunicação com o alto nível (Controlador) acontece através de serial (UAR
 | 0 | Header | `0xF1` | Byte que indica o inicio da mensagem |
 | 1 | Header | `0xF1` | Byte que indica o inicio da mensagem |
 | 2 | Checksum | | Byte calculado utilizando operações XOR bit a bit dos dados: `checksum = dado[0] ^ ... ^ dado[N-1]` |
-| 3 - 38 | | Posições dos 18 motores do corpo |
-| 39 - 40 | | Posição do motor do Gimbal que atua no pitch |
-| 41 - 42 | | Posição do motor do Gimbal que atua no yaw |
+| 3 - 38 | Ânglulos | | Posições dos 18 motores do corpo |
+| 39 - 40 | Ânglulo | | Posição do motor do Gimbal que atua no pitch |
+| 41 - 42 | Ânglulo | | Posição do motor do Gimbal que atua no yaw |
 | 43 | Footer | `0xF2` | Byte que indica o fim da mensagem |
 | 44 | Footer | `0xF2` | Byte que indica o fim da mensagem |
-
