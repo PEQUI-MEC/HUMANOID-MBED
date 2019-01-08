@@ -1,34 +1,30 @@
 #include "Sinusoidal.h"
 
-Sinusoidal::Sinusoidal(int id, PinName tx, PinName rx, int baud) {
-  BufferSerial* serial = new BufferSerial(tx, rx, 32);
+#ifdef CFG_ROBOT_X
+
+Sinusoidal::Sinusoidal(uint8_t id, PinName tx, PinName rx, uint32_t baud): serial(tx, rx, 32) {
   this->id = id;
-  this->servo = new XYZrobotServo(id, *serial, baud);
+  this->baud = baud;
+  serial.baud(baud);
 }
 
-void Sinusoidal::run(int min, int max, float f, int playtime) {
+void Sinusoidal::run(uint16_t min, uint16_t max, float f, uint8_t playtime) {
   DigitalOut led1(LED1); // Marca se o comando de setar posição está sendo enviado
   DigitalOut led2(LED2); // Marca se está recebendo resposta do servo
 
-  XYZrobotServo &servo = *this->servo;
+  XYZrobotServo servo(id, serial, baud);
   XYZrobotServoStatus status;
 
   Timer timer;
   timer.start();
   float t;
 
-  int amplitude = (max - min)/2;
-  int referencia = min + amplitude;
-  int pos = min;
-
-  // Variaveis para calcular a corrente rms
-  int ultimo = timer.read_ms();
-  float soma = 0;
-  int qtdParcial = 0;
-  int qtdTotal = 0;
-  float Irms = 0;
+  uint16_t amplitude = (max - min)/2;
+  uint16_t referencia = min + amplitude;
+  uint16_t pos = min;
 
   while(true) {
+    // wait_ms(50);
     t = timer.read();
     pos = ((amplitude * cos(2 * M_PI * f * t)) + referencia);
 
@@ -45,18 +41,9 @@ void Sinusoidal::run(int min, int max, float f, int playtime) {
       printf("Error: %d\n", servo.getLastError());
     } else {
       led2 = true;
-      qtdParcial++;
-      soma += pow(status.iBus, 2);
-      printf("$%d %d %d %d %d;\n", pos, status.position, status.iBus, (int)Irms, qtdTotal*20);
-    }
-
-    if ((timer.read_ms() - ultimo) >= 100) {
-      qtdTotal = qtdParcial;
-      printf("Calculando RMS de %d requisicoes...\n", qtdTotal);
-      Irms = sqrt(soma/qtdParcial);
-      soma = 0;
-      qtdParcial = 0;
-      ultimo = timer.read_ms();
+      printf("$%d %d;\n", pos, status.position);
     }
   }
 }
+
+#endif

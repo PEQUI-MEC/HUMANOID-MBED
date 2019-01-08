@@ -1,50 +1,56 @@
 #include "Cluster.h"
 
-Cluster::Cluster(PinName tx, PinName rx, uint8_t* ids, uint8_t length, uint32_t baud): serial(tx, rx, 32) {
-  this->size = length;
-  this->data = &DataController::getInstance();
+#ifdef CFG_ROBOT_X
 
-  for (int i = 0; i < length; i++)
-    this->servos.push_back(XYZrobotServo(ids[i], this->serial, baud));
+Cluster::Cluster(PinName tx, PinName rx, std::array<uint8_t, CLUSTER_SIZE> ids, uint32_t baud)
+  : servos({{
+        {1, this->serial, baud, true, 0},
+        {2, this->serial, baud, false, 0},
+        {3, this->serial, baud, true, 0},
+        {4, this->serial, baud, true, 0},
+        {5, this->serial, baud, true, 0},
+        {6, this->serial, baud, false, 45},
+        {7, this->serial, baud, true, 0},
+        {8, this->serial, baud, true, 0},
+        {9, this->serial, baud, false, 0},
+        {10, this->serial, baud, false, 0},
+        {11, this->serial, baud, true, 0},
+        {12, this->serial, baud, false, -45}
+    }}),
+    serial(tx, rx, 32)
+{
+  serial.baud(baud);
+  this->size = ids.size();
+}
+
+Cluster::~Cluster() {
+  printf("WARN: Destructing Cluster...");
+  this->thread.terminate();
+  for (uint8_t i = 0; i < size; i++)
+    this->servos[i].disable();
 }
 
 void Cluster::start() {
-  this->thread = new Thread();
-  this->thread->start(callback(&Cluster::thread_starter, this));
+  if (CLUSTER_READ_ONLY)
+    this->thread.start(callback(this, &Cluster::readPositions));
+  else
+    this->thread.start(callback(this, &Cluster::loop));
 }
 
-void Cluster::run() {
-  DigitalOut led(LED2);
+void Cluster::loop() {
+  DataManager& data = DataManager::getInstance();
   uint8_t i = 0;
 
-  while(true) {
-    for(i = 0; i < this->size; i++) {
-      XYZrobotServo& servo = this->servos[i];
-
-      uint8_t id = servo.getId();
-      uint16_t pos = this->data->getTargetP(servo.getId());
-
-      printf("Servo %d: Target %d\n", id, pos);
-      servo.setPosition(pos, 0);
-
-      XYZrobotServoStatus status = servo.readStatus();
-      if (servo.getLastError()) {
-        printf("Servo %d: Error %d\n", id, servo.getLastError());
-      } else {
-        this->data->setServoP(id, status.position);
-        this->data->setServoI(id, status.iBus);
-        printf("Servo %d: %d %d\n", id, status.position, status.iBus);
-      }
-    }
-
-    // Dados para plotar o grafico
-    printf("\n$%d ", this->data->getTargetP(this->servos[0].getId()));
-    for(i = 0; i < this->size; i++) {
+  while (true) {
+    for (i = 0; i < this->size; i++) {
       uint8_t id = this->servos[i].getId();
-      if (i == this->size-1)
-        printf("%d %d;\n", this->data->getServoP(id), this->data->getServoI(id));
-      else
-        printf("%d %d ", this->data->getServoP(id), this->data->getServoI(id));
+      this->servos[i].setPosition(data.getGoalPosition(id));
+
+      // XYZrobotServoStatus status = servo.readStatus();
+      // if (!servo.getLastError()) {
+      //   int16_t pos = range_map(status.position, 0, 1023, -1800, 1500);
+      //   data.setRealPosition(id, pos);
+      // }
     }
   }
 }
@@ -54,21 +60,15 @@ void Cluster::readPositions() {
 
   while(true) {
     for(i = 0; i < this->size; i++) {
-      XYZrobotServo& servo = this->servos[i];
+      SerialServo& servo = this->servos[i];
 
-      XYZrobotServoStatus status = servo.readStatus();
+      int16_t pos = servo.readPosition();
       if (servo.getLastError())
         printf("Servo %d: Error %d\n", servo.getId(), servo.getLastError());
       else
-        printf("Servo %d: $%d %d;\n", servo.getId(), status.position, status.iBus);
+        printf("Servo %d: %d\n", servo.getId(), pos);
     }
   }
 }
 
-void Cluster::thread_starter(void const *p) {
-  Cluster* instance = (Cluster*)p;
-  if (CLUSTER_READ_ONLY)
-    instance->readPositions();
-  else
-    instance->run();
-}
+#endif

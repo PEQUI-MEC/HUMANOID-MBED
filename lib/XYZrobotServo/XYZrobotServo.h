@@ -104,6 +104,7 @@ struct XYZrobotServoStatus {
 
 class XYZrobotServo {
 public:
+  XYZrobotServo(uint8_t id, PinName tx, PinName rx, uint32_t baud);
   XYZrobotServo(uint8_t id, BufferSerial &, uint32_t baud);
 
   /// Writes data from the specified buffer to the servo's EEPROM.
@@ -317,5 +318,5 @@ private:
 
   uint32_t baud;
 
-  BufferSerial *serial;
+  BufferSerial* serial;
 };

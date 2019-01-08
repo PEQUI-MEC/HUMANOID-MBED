@@ -1,5 +1,7 @@
 #include "ServoDiagnostics.h"
 
+#ifdef CFG_X
+
 // TODO: Ler a posição de vários motores
 // TODO: Controlar a posição do motor atraves da serial do pc
 
@@ -89,3 +91,5 @@ void ServoDiagnostics::setServoPosition(
     wait_ms(interval);
   }
 }
+
+#endif

@@ -6,7 +6,7 @@
 
 #ifndef _IG_BUFFERSERIAL_20130518
 #define _IG_BUFFERSERIAL_20130518
- 
+
 #include "mbed.h"
 
 class BufferSerial : public Serial {
@@ -16,17 +16,18 @@ protected:
     int _present;
     int _last;
     unsigned char* _buf;
-    void _setup( const int& size );
-    int _getShift( const int& value );
-    void _irq( void );
+    void _setup(const int& size);
+    int _getShift(const int& value);
+    void _irq(void);
 public:
-    BufferSerial( PinName tx , PinName rx );
-    BufferSerial( PinName tx , PinName rx , const int& bufferSize );
-    BufferSerial( PinName tx , PinName rx , const int& bufferSize , const char* name );
+    BufferSerial(PinName tx , PinName rx);
+    BufferSerial(PinName tx , PinName rx , const int& bufferSize);
+    BufferSerial(PinName tx , PinName rx , const int& bufferSize , const char* name);
     virtual ~BufferSerial();
-    virtual int getc( void );
-    virtual int unreadable( void );
-    virtual int readable( void );
+    virtual int getc(void);
+    virtual int unreadable(void);
+    virtual int readable(void);
+    void flush();
 };
 
 #endif

@@ -1,45 +1,59 @@
-#include "mbed.h"
-#include "config.h"
-#include "SerialPins.h"
+#include "AsyncCommunication.h"
 #include "Cluster.h"
-#include "DataController.h"
+#include "Communication.h"
+#include "Gimbal.h"
+#include "PwmCluster.h"
+#include "config.h"
+#include "mbed.h"
 
-Serial pc(USBTX, USBRX, 115200); // Usando minicom, o maximo é 115200
+// TODO: Configurar tensão admisivel dos XYZ
+// TODO: Configurar sentido reverso de rotação
+// TODO: Configurar offset de movimento
+// TODO: Implementar procedimento para o caso de o VREF ser abaixo de um limiar
+
+Serial pc(USBTX, USBRX, COM_BAUD_RATE);
+
+void change_enable_pins(bool state);
 
 int main() {
-  printf("Initializing...\n");
-  DataController& data = DataController::getInstance();
+  DigitalOut enable(ENABLE, !ENABLE_ACTIVE);
+  wait_ms(500);
 
-  uint8_t ids[] = {1, 10, 14};
-  Cluster c(SerialPins::TX7, SerialPins::RX7, ids, 3);
-  c.start();
+  /**
+   * Initializing Gimbal
+   **/
+  Gimbal gimbal;
+  gimbal.start();
 
-  // Executar movimento senoidal
-  DigitalOut led(LED1);
-  int i = 0;
+  /**
+   * Initializing Body Servos
+   **/
+#ifdef CFG_ROBOT_X
+  Cluster c2(SERIAL_TX7, SERIAL_RX7, {1, 2, 3});
+  c2.start();
+#endif
 
-  Timer timer;
-  timer.start();
-  float t;
-  float f = 0.5;
+#ifdef CFG_ROBOT_F
+  PwmCluster cluster;
+  cluster.start();
+#endif
 
-  int min = 522;
-  int max = 700;
-  int amplitude = (max - min)/2;
-  int referencia = min + amplitude;
-  int pos = min;
+  /**
+   * Initializing Communication
+   **/
+#ifdef CFG_COM_SYNC
+  Communication com(USBTX, USBRX);
+  com.start();
+#endif
 
-  while(true) { // Sempre é necessário um loop no main
-    t = timer.read();
-    pos = ((amplitude * cos(2 * M_PI * f * t)) + referencia);
+#ifdef CFG_COM_ASYNC
+  AsyncCommunication acom(USBTX, USBRX);
+  acom.start();
+#endif
 
-    if (pos >= min && pos <= max) {
-      led = true;
-
-      for (i = 0; i < 3; i++)
-        data.setTargetP(ids[i], pos);
-    } else {
-      led = false;
-    }
-  }
+  /**
+   * Main thread waits forever
+   **/
+  DigitalOut led1(LED1, 1);
+  while (true) Thread::signal_wait(2);
 }
