@@ -14,7 +14,13 @@ sudo apt-get install gcc-arm-embedded cmake make
 
 ## Build
 
-Para gerar o arquivo `.bin` que será enviado para o microcontrolador, basta executar os comandos:
+Para gerar o arquivo `.bin` que será enviado para o microcontrolador, basta executar o script `build.sh` através do comando:
+
+```
+./build.sh
+```
+
+Ou executar a sequência de comandos comandos:
 
 ```
 mkdir build/
@@ -23,51 +29,34 @@ cmake ..
 make
 ```
 
-Ou executar o script `build.sh` através do comando:
-
-```
-./build.sh
-```
-
 ## Protocolo de Comunicação
 
-A comunicação com o alto nível acontece através de serial (UART) utilizando um protocolo próprio composta de alguns comandos. Todas as mensagens são precedidas por um cabeçalho que indica o protocolo, o comando e algumas informações de verificação de erro.
+A comunicação com o alto nível acontece através de serial (UART) utilizando um protocolo em que as mensagens são diferentes dependendo da direção em que são enviadas. Todas as mensagens são compostas por um cabeçalho (*header*), que inclui um checksum para verificação de erro, os dados e um rodapé (*footer*). Os dados com multiplos bytes são enviados no formato *big-endian*.
 
-### Cabeçalho
+### Micro p/ Controlador
 
-| Byte(s) | Nome | Padrão | Descrição |
+| Byte(s) | Informação | Padrão | Descrição |
 |:---:|:---:|:---:|:---|
-| 0 | Protocolo | `0xE8` | Indica qual protocolo está sendo transmitido |
-| 1 | Comando (ID) | | Indica qual o comando que está sendo enviado na mensagem |
-| 2 | Tamanho | | Tamanho da mensagem que está sendo transmitida, incluindo o cabeçalho |
-| 3 | Checksum | | Byte calculado utilizando operações XOR da seguinte forma: `checksum = comando ^ tamanho ^ dado[0] ^ ... ^ dado[N-1]` |
-| 4 - N | Dados | | Dados referentes ao comando da mensagem |
+| 0 | Header | `0xF1` | Byte que indica o inicio da mensagem |
+| 1 | Header | `0xF1` | Byte que indica o inicio da mensagem |
+| 2 | Checksum | | Byte calculado utilizando operações XOR bit a bit dos dados: `checksum = dado[0] ^ ... ^ dado[N-1]` |
+| 3 - 4 | Ângulo | | Pitch do Gimbal |
+| 5 - 6 | Ângulo | | Yaw do Gimbal |
+| 7 - 8 | Ângulo | | Ângulo do motor do Gimbal que atua no pitch |
+| 9 - 10 | Ângulo | | Ângulo do motor do Gimbal que atua no yaw |
+| 11 | Tensão | | Tensão de referẽncia da bateria |
+| 12 | Footer | `0xF2` | Byte que indica o fim da mensagem |
+| 13 | Footer | `0xF2` | Byte que indica o fim da mensagem |
 
-### Comandos
+### Controlador p/ Micro
 
-| Comando | ID | N° Bytes | Significado |
+| Byte(s) | Informação | Padrão | Descrição |
 |:---:|:---:|:---:|:---|
-| ERROR | `0x01` | 0 | Indica algum erro na transmissão ou reconhecimento da ultima mensagem |
-| UPDATE | `0x02` | 41 | Transmite a posição de cada um dos motores e do nível de tensão da bateria |
-| GOAL | `0x03` | 40 | Transmite as posições desejadas para cada motor |
-
-### Comando UPDATE
-
-| Byte(s) | Descrição |
-|:---:|:---|
-| 0 - 3| Cabeçalho |
-| 4 - 39 | Posições dos 18 motores do corpo |
-| 40 - 43 | Posições dos motores do gimbal, sendo a primeira posição o *pitch* e a segunda o *yaw* |
-| 44 | Nível de tensão da bateria |
-
-As posições dos motores do corpo e do gimbal são transmitidas em conjuntos de 2 bytes em que o byte nas posições `N` e `N+1` indicam a posição do motor com ID `((N - 4)/2) + 1`. O byte `N` é a parte superior da posição (MSB) e o byte `N+1` é a parte inferior da posição (LSB).
-
-### Comando GOAL
-
-| Byte(s) | Descrição |
-|:---:|:---|
-| 0 - 3| Cabeçalho |
-| 4 - 39 | Posições dos 18 motores do corpo |
-| 40 - 43 | Posições dos motores do gimbal, sendo a primeira posição o *pitch* e a segunda o *yaw* |
-
-As posições dos motores do corpo são transmitidas seguindo a mesma regra do comando UPDATE.
+| 0 | Header | `0xF1` | Byte que indica o inicio da mensagem |
+| 1 | Header | `0xF1` | Byte que indica o inicio da mensagem |
+| 2 | Checksum | | Byte calculado utilizando operações XOR bit a bit dos dados: `checksum = dado[0] ^ ... ^ dado[N-1]` |
+| 3 - 38 | | Posições dos 18 motores do corpo |
+| 39 - 40 | | Posição do motor do Gimbal que atua no pitch |
+| 41 - 42 | | Posição do motor do Gimbal que atua no yaw |
+| 43 | Footer | `0xF2` | Byte que indica o fim da mensagem |
+| 44 | Footer | `0xF2` | Byte que indica o fim da mensagem |
