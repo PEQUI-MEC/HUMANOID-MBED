@@ -20,7 +20,7 @@ Para gerar o arquivo `.bin` que será enviado para o microcontrolador, basta exe
 ./build.sh
 ```
 
-Ou executar a sequência de comandos comandos:
+Ou executar a sequência de comandos:
 
 ```
 mkdir build/
@@ -31,7 +31,7 @@ make
 
 ## Protocolo de Comunicação
 
-A comunicação com o alto nível acontece através de serial (UART) utilizando um protocolo em que as mensagens são diferentes dependendo da direção em que são enviadas. Todas as mensagens são compostas por um cabeçalho (*header*), que inclui um checksum para verificação de erro, os dados e um rodapé (*footer*). Os dados com multiplos bytes são enviados no formato *big-endian*.
+A comunicação com o alto nível (Controlador) acontece através de serial (UART) utilizando um protocolo em que as mensagens são diferentes dependendo da direção em que são enviadas. Todas as mensagens são compostas por um cabeçalho (*header*), que inclui um checksum para verificação de erro, os dados e um rodapé (*footer*). Os dados com multiplos bytes são enviados no formato *big-endian*.
 
 ### Micro p/ Controlador
 
@@ -60,3 +60,4 @@ A comunicação com o alto nível acontece através de serial (UART) utilizando 
 | 41 - 42 | | Posição do motor do Gimbal que atua no yaw |
 | 43 | Footer | `0xF2` | Byte que indica o fim da mensagem |
 | 44 | Footer | `0xF2` | Byte que indica o fim da mensagem |
+
